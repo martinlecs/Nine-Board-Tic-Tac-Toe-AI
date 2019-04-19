@@ -2,6 +2,9 @@
 # Edit at https://www.gitignore.io/?templates=c,cmake,python,pycharm
 #
 
+# Generated Assignment Files
+src/*
+
 # Jetbrains
 
 *.idea/

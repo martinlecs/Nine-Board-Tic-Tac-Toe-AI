@@ -4,6 +4,7 @@ from player.GameTreeNode import GameTreeNode
 
 INITIAL_BOARD = np.zeros((10, 10), dtype="int8")
 FULL_BOARD = np.ones((10, 10), dtype="int8")
+ALMOST_FULL_BOARD = []
 
 
 @pytest.fixture
