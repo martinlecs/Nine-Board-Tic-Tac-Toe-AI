@@ -1,6 +1,8 @@
-# Maximise value on current board while minimising impact of opponent's move
-# must be greater than some threshold
-
 class Heuristic:
-    pass
+
+    def __init__(self):
+        pass
+
+    def heuristic(self):
+        pass
 
