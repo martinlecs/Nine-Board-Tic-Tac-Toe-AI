@@ -1,29 +1,34 @@
 from player.GameTreeNode import GameTreeNode
 from typing import Callable
 import math
+from player.agent import print_board
 
 
-def heuristic():
-    return 1
-
-
-def minimax(node: GameTreeNode, depth: int):
+def minimax(node: GameTreeNode, eval_fn: Callable, depth: int, generated_nodes=False):
     """ Wrapper function for negamax search """
-    return negamax(node, heuristic, depth, -math.inf, math.inf)
+    player = 1
+    node.generate_moves(player)
+    best_move = max(node.get_children(), key=lambda m: negamax(m, eval_fn, depth - 1, -math.inf, math.inf, player))
+    if generated_nodes:
+        return best_move.get_board(), best_move.get_move(), node.all_generated_nodes()
+    return best_move.get_board(), best_move.get_move()
 
 
-def negamax(node: GameTreeNode, eval_fn: Callable, depth: int, alpha: float, beta: float):
+def negamax(node: GameTreeNode, eval_fn: Callable, depth: int, alpha: float, beta: float, player):
     """ Search game to determine best action; uses negamax implementation and alpha-beta pruning. """
-    if node.is_terminal_node() or depth == 0:
-        return eval_fn(node.get_state())
 
-    node.generate_moves()   # will have to keep track of which player I am when generating moves
-    node.order_moves()  # can be optimised internally inside the class
+    if node.is_terminal_node() or depth == 0:   #TODO: fix terminal node
+        return eval_fn(node.get_board())
+
+    node.generate_moves(-player)
     for child in node.get_children():
-        alpha = max(alpha, -negamax(child, depth - 1, -beta, -alpha))
+        alpha = max(alpha, -negamax(child, eval_fn, depth - 1, -beta, -alpha, -player))
         if alpha >= beta:
             return alpha
     return alpha
 
+    #TODO: Fix player move generation
+
 
     # where is the action taken, where is the new state?
+
