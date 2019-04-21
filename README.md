@@ -1,6 +1,8 @@
 COMP3411 2019, T1.
 Assignment 3: Nine-Board Tic-Tac-Toe.
 
+[![Build Status](https://travis-ci.com/martinlecs/comp3411-tic-tac-toe.svg?token=kGtS9cVnuVjkP2dryxvf&branch=master)](https://travis-ci.com/martinlecs/comp3411-tic-tac-toe)
+
 1. Install requirements with pip3.
 2. cd into `/src` and run `make all`.
 3. Run the `play.sh` script to run a game.
