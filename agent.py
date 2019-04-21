@@ -6,11 +6,16 @@
 import socket
 import sys
 import numpy as np
+from player.negamax import minimax
+from player.Heuristic import Heuristic
+from player.GameTreeNode import GameTreeNode
+
+PLAYER = 1
 
 # a board cell can hold:
 #   0 - Empty
 #   1 - I played here
-#   2 - They played here
+#   -1 - They played here
 
 # the boards are of size 10 because index 0 isn't used
 boards = np.zeros((10, 10), dtype="int8")
@@ -44,13 +49,9 @@ def print_board(board):
 def play():
     print_board(boards)
 
-    # just play a random move for now
-    n = np.random.randint(1,9)
-    while boards[curr][n] != 0:
-        n = np.random.randint(1,9)
-
+    next_board, n = minimax(GameTreeNode(boards[curr]), Heuristic.heuristic, 7)
     # print("playing", n)
-    place(curr, n, 1)
+    place(curr, n, PLAYER)
     return n
 
 # place a move in the global boards
@@ -70,16 +71,16 @@ def parse(string):
         command, args = string, []
 
     if command == "second_move":
-        place(int(args[0]), int(args[1]), 2)
+        place(int(args[0]), int(args[1]), -PLAYER)
         return play()
     elif command == "third_move":
         # place the move that was generated for us
-        place(int(args[0]), int(args[1]), 1)
+        place(int(args[0]), int(args[1]), -PLAYER)
         # place their last move
-        place(curr, int(args[2]), 2)
+        place(curr, int(args[2]), -PLAYER)
         return play()
     elif command == "next_move":
-        place(curr, int(args[0]), 2)
+        place(curr, int(args[0]), -PLAYER)
         return play()
     elif command == "win":
         print("Yay!! We win!! :)")

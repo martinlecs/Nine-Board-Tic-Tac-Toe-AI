@@ -13,19 +13,23 @@ class GameTreeNode:
         self._children = None
         self._move = move
 
+
     def is_terminal_node(self):
         """ Check is a state is a win-state for the player """
 
+        def check_equal(lst):
+            lst = list(lst)
+            no_zeroes = True if lst[0] != 0 else False
+            return no_zeroes and lst.count(lst[0]) == len(lst)
+
         board = self._board
-        # mask opponent's moves
-        board[board == 2] = 0
         # check rows for win state
-        rows = [np.sum(board[1:4]), np.sum(board[4:7]), np.sum(board[7:10])]
+        rows = any([check_equal(board[1:4]), check_equal(board[4:7]), check_equal(board[7:10])])
         # check columns for win state
-        columns = [np.sum(board[[1, 4, 7]]), np.sum(board[[2, 5, 8]]), np.sum(board[[3, 6, 9]])]
-        # # check diagonals for win state
-        diagonals = [np.sum(board[[1, 5, 9]]), np.sum(board[[3, 5, 7]])]
-        return any(s == 3 for s in np.concatenate([rows, columns, diagonals]))
+        columns = any([check_equal(board[[1, 4, 7]]), check_equal(board[[2, 5, 8]]), check_equal(board[[3, 6, 9]])])
+        # check diagonals for win state
+        diagonals = any([check_equal(board[[1, 5, 9]]), check_equal(board[[3, 5, 7]])])
+        return any([rows, columns, diagonals])
 
     def generate_moves(self, player):
         """ Generates all possible moves for current player by looking at empty squares as potential moves
@@ -38,8 +42,10 @@ class GameTreeNode:
             if board[i] == 0:
                 new_move = np.copy(board)
                 new_move[i] = player
+                # print(new_move)
                 move_list.append(GameTreeNode(new_move, move=i))
                 continue
+        # print("\n")
         self._children = move_list
         ALL_OUTPUT.append(np.array([i.get_board() for i in self._children]))
 
@@ -74,3 +80,4 @@ class GameTreeNode:
     def reset_generated_nodes():
         global ALL_OUTPUT
         ALL_OUTPUT = []
+
