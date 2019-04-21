@@ -1,7 +1,6 @@
 from player.GameTreeNode import GameTreeNode
 from typing import Callable
 import math
-from player.agent import print_board
 
 
 def minimax(node: GameTreeNode, eval_fn: Callable, depth: int, generated_nodes=False):
@@ -17,7 +16,7 @@ def minimax(node: GameTreeNode, eval_fn: Callable, depth: int, generated_nodes=F
 def negamax(node: GameTreeNode, eval_fn: Callable, depth: int, alpha: float, beta: float, player):
     """ Search game to determine best action; uses negamax implementation and alpha-beta pruning. """
 
-    if node.is_terminal_node() or depth == 0:   #TODO: fix terminal node
+    if node.is_terminal_node() or depth == 0:
         return eval_fn(node.get_board())
 
     node.generate_moves(-player)
@@ -27,8 +26,4 @@ def negamax(node: GameTreeNode, eval_fn: Callable, depth: int, alpha: float, bet
             return alpha
     return alpha
 
-    #TODO: Fix player move generation
-
-
-    # where is the action taken, where is the new state?
 
