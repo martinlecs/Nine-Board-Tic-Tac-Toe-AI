@@ -1,5 +1,16 @@
 import numpy as np
 
+PARTIAL_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 0, 0, 1, -1, 0, -1],
+                          [0, 0, 0, 0, 1, -1, 0, 0, 0, 0],
+                          [0, -1, 0, 0, 0, 0, 0, 0, 0, 0],
+                          [0, 0, 0, 1, -1, 0, 1, 0, 0, 0],
+                          [0, -1, -1, 1, 0, 1, 0, 0, 0, 0],
+                          [0, 2, 0, 0, 0, 0, 0, 0, 1, 0],
+                          [0, 0, 0, 0, -1, 1, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+                          [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]])
+
 
 class Heuristic:
 
@@ -8,7 +19,7 @@ class Heuristic:
 
     @staticmethod
     def heuristic(state: np.ndarray):
-        return np.random.randint(1,9)
+        return np.random.randint(1, 9)
 
     @staticmethod
     def heuristic2(state: np.ndarray, player: int):
@@ -32,3 +43,11 @@ class Heuristic:
         player_2_value = board_value(state, -player)
         return player_1_value - player_2_value
 
+    @staticmethod
+    def heuristic3(state: np.ndarray):
+        """ TODO: DO HEURISTIC IMPLEMENTATION HERE """
+        return 0
+
+
+if __name__ == "__main__":
+    print(Heuristic.heuristic3(PARTIAL_BOARD))

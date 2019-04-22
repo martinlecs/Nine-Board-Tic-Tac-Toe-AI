@@ -9,7 +9,7 @@ PARTIAL_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0, 0, 0, 0, 1, 2, 0, 0, 0, 0],
                           [0, 2, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0, 0, 0, 1, 2, 0, 1, 0, 0, 0],
-                          [0, 2, 2, 1, 0, 1, 0, 0, 0, 0],   # 5th board
+                          [0, 2, 2, 1, 0, 1, 0, 0, 0, 0],
                           [0, 2, 0, 0, 0, 0, 0, 0, 1, 0],
                           [0, 0, 0, 0, 2, 1, 0, 0, 0, 0],
                           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
@@ -31,27 +31,27 @@ CURRENT_PLAYER = 1
 
 @pytest.fixture(scope='function')
 def initial_board_state_node():
-    return GameTreeNode(INITIAL_BOARD[5])
+    return GameTreeNode(INITIAL_BOARD, 5)
 
 
 @pytest.fixture
 def full_board_state_node():
-    return GameTreeNode(FULL_BOARD[1])
+    return GameTreeNode(FULL_BOARD, 1)
 
 
 @pytest.fixture
 def partial_board_state_node():
-    return GameTreeNode(PARTIAL_BOARD[5])
+    return GameTreeNode(PARTIAL_BOARD, 5)
 
 
 @pytest.fixture
 def multiple_wins_state_node():
-    return GameTreeNode(BOARD_WITH_MULTIPLE_WINS[1])
+    return GameTreeNode(BOARD_WITH_MULTIPLE_WINS, 1)
 
 
 def test_init_game_tree_node(initial_board_state_node):
     g = initial_board_state_node
-    assert np.array_equal(g.get_board(), INITIAL_BOARD[5])
+    assert np.array_equal(g.board, INITIAL_BOARD[5])
 
 
 def test_generate_moves_from_initial_board_state(initial_board_state_node):
@@ -66,13 +66,13 @@ def test_generate_moves_from_initial_board_state(initial_board_state_node):
                        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]])
     g.generate_moves(CURRENT_PLAYER)
-    assert np.array_equal([i.get_board() for i in g.get_children()], result) and np.array_equal(g.get_board(), INITIAL_BOARD[5])
+    assert np.array_equal([i.board for i in g.children], result) and np.array_equal(g.board, INITIAL_BOARD[5])
 
 
 def test_no_moves_can_be_generated(full_board_state_node):
     g = full_board_state_node
     g.generate_moves(CURRENT_PLAYER)
-    assert len(g.get_children()) == 0
+    assert len(g.children) == 0
 
 
 def test_partial_board_state(partial_board_state_node):
@@ -83,7 +83,7 @@ def test_partial_board_state(partial_board_state_node):
                                [0, 2, 2, 1, 0, 1, 0, 1, 0, 0],
                                [0, 2, 2, 1, 0, 1, 0, 0, 1, 0],
                                [0, 2, 2, 1, 0, 1, 0, 0, 0, 1]])
-    assert np.array_equal([i.get_board() for i in g.get_children()], possible_moves)
+    assert np.array_equal([i.board for i in g.children], possible_moves)
 
 
 def test_terminal_node_rows(multiple_wins_state_node):
