@@ -11,6 +11,7 @@ PARTIAL_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
                           [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]])
 
+
 class Heuristic:
 
     def __init__(self):
@@ -18,7 +19,7 @@ class Heuristic:
 
     @staticmethod
     def heuristic(state: np.ndarray):
-        return np.random.randint(1,9)
+        return np.random.randint(1, 9)
 
     @staticmethod
     def heuristic2(state: np.ndarray, player: int):
