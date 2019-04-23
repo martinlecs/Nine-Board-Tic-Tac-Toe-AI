@@ -1,4 +1,4 @@
-from player.Heuristic import Heuristic
+from player.heuristic.Heuristic import Heuristic
 import pytest
 from player.GameTreeNode import GameTreeNode
 import numpy as np

@@ -86,7 +86,6 @@ class GameTreeNode:
         def create_new_successor_node(state, board_num, move, player):
             state_copy = np.copy(state)
             state_copy[self._board][move] = player
-            print(state_copy[self._board])
             return GameTreeNode(state_copy, board_num, move=move)
 
         board = self.board

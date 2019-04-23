@@ -43,11 +43,6 @@ class Heuristic:
         player_2_value = board_value(state, -player)
         return player_1_value - player_2_value
 
-    @staticmethod
-    def heuristic3(state: np.ndarray):
-        """ TODO: DO HEURISTIC IMPLEMENTATION HERE """
-        return 0
-
 
 if __name__ == "__main__":
     print(Heuristic.heuristic3(PARTIAL_BOARD))

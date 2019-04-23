@@ -7,7 +7,6 @@ import socket
 import sys
 import numpy as np
 from player.negamax import minimax
-from player.Heuristic import Heuristic
 from player.GameTreeNode import GameTreeNode
 
 PLAYER = 1
@@ -49,7 +48,7 @@ def print_board(board):
 def play():
     print_board(boards)
 
-    next_board, n = minimax(GameTreeNode(boards[curr]), Heuristic.heuristic, 7)
+    next_board, n = minimax(GameTreeNode(boards, curr), 5)
     # print("playing", n)
     place(curr, n, PLAYER)
     return n
