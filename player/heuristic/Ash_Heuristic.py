@@ -1,16 +1,39 @@
 import numpy as np
 
 
+
 PARTIAL_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0, 0, 0, 0, 0, 0, 1, -1, 0, -1],
                           [0, 0, 0, 0, 1, -1, 0, 0, 0, 0],
                           [0, -1, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0, 0, 0, 1, -1, 0, 1, 0, 0, 0],
                           [0, -1, -1, 1, 0, 1, 0, 0, 0, 0],
-                          [0, 2, 0, 0, 0, 0, 0, 0, 1, 0],
+                          [0, -1, 0, 0, 0, 0, 0, 0, 1, 0],
                           [0, 0, 0, 0, -1, 1, 0, 0, 0, 0],
                           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
                           [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]])
+
+
+def print_board_row(board, a, b, c, i, j, k):
+    # The marking script doesn't seem to like this either, so just take it out to submit
+    print("", board[a][i], board[a][j], board[a][k], end = " | ")
+    print(board[b][i], board[b][j], board[b][k], end = " | ")
+    print(board[c][i], board[c][j], board[c][k])
+
+
+def print_board(board):
+    print_board_row(board, 1,2,3,1,2,3)
+    print_board_row(board, 1,2,3,4,5,6)
+    print_board_row(board, 1,2,3,7,8,9)
+    print(" ------+-------+------")
+    print_board_row(board, 4,5,6,1,2,3)
+    print_board_row(board, 4,5,6,4,5,6)
+    print_board_row(board, 4,5,6,7,8,9)
+    print(" ------+-------+------")
+    print_board_row(board, 7,8,9,1,2,3)
+    print_board_row(board, 7,8,9,4,5,6)
+    print_board_row(board, 7,8,9,7,8,9)
+    print()
 
 
 class Heuristic:
@@ -253,4 +276,5 @@ class Heuristic:
 
 if __name__ == "__main__":
     h = Heuristic(PARTIAL_BOARD)
+    print_board(PARTIAL_BOARD)
     print(h.heuristic())
