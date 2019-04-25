@@ -47,7 +47,8 @@ def negamax(node: GameTreeNode, eval_cls: Callable, depth: int, alpha: float, be
     """
 
     if node.is_terminal_node() or depth == 0:
-        return eval_cls(node.state).heuristic()
+        # return eval_cls(node.state, depth).heuristic()
+        return node.heuristic_val
 
     node.generate_moves(-player)
     for child in node.children:

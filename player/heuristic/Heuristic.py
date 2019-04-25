@@ -18,7 +18,7 @@ class Heuristic:
         self._global_board = global_board
 
     @staticmethod
-    def heuristic(state: np.ndarray):
+    def heuristic():
         return np.random.randint(1, 9)
 
     @staticmethod
