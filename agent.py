@@ -7,6 +7,7 @@ import socket
 import sys
 import numpy as np
 from player.negamax import minimax
+from player.heuristic.Ash_Heuristic import Heuristic
 from player.GameTreeNode import GameTreeNode
 
 PLAYER = 1
@@ -46,9 +47,8 @@ def print_board(board):
 
 # choose a move to play
 def play():
-    print_board(boards)
 
-    next_board, n = minimax(GameTreeNode(boards, curr), 5)
+    _, n = minimax(GameTreeNode(boards, curr), Heuristic, 3)
     # print("playing", n)
     place(curr, n, PLAYER)
     return n
@@ -58,6 +58,8 @@ def place(board, num, player):
     global curr
     curr = num
     boards[board][num] = player
+    print_board(boards)
+
 
 # read what the server sent us and
 # only parses the strings that are necessary

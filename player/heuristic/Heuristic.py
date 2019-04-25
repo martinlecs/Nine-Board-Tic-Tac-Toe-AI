@@ -14,8 +14,8 @@ PARTIAL_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 
 class Heuristic:
 
-    def __init__(self):
-        pass
+    def __init__(self, global_board: np.ndarray):
+        self._global_board = global_board
 
     @staticmethod
     def heuristic(state: np.ndarray):

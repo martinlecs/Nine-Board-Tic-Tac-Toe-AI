@@ -2,6 +2,9 @@ import os
 
 import numpy as np
 
+# TODO: remove this shit
+from player.heuristic.Ash_Heuristic import Heuristic
+
 NPY_OUTPUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'tests', 'numpy_output')
 ALL_OUTPUT = []
 
@@ -18,8 +21,12 @@ class GameTreeNode:
     def __init__(self, state: np.ndarray, board: int, move=None):
         self._state = state
         self._board = board
-        self._children = None
         self._move = move
+        self._children = None
+        self._heuristic_val = Heuristic(state).heuristic()
+
+        # For debugging purposes
+        self._alpha = None
 
     @property
     def state(self):
@@ -37,16 +44,20 @@ class GameTreeNode:
     def move(self):
         return self._move
 
-    def update_state_with_move(self, move, player):
-        self._state[self._board][move] = player
+    @property
+    def heuristic_val(self):
+        return self._heuristic_val
+
+    @property
+    def alpha(self):
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, val):
+        self._alpha = val
 
     def get_size_children(self):
         return len(self._children)
-
-    def order_moves(self):
-        # need to use heuristic on heuristic
-        # possibly order moves based on which board has best position
-        pass
 
     @staticmethod
     def all_generated_nodes(save=False):
@@ -86,7 +97,7 @@ class GameTreeNode:
         def create_new_successor_node(state, board_num, move, player):
             state_copy = np.copy(state)
             state_copy[self._board][move] = player
-            return GameTreeNode(state_copy, board_num, move=move)
+            return GameTreeNode(state_copy, move, move=move)
 
         board = self.board
         move_list = []
@@ -95,4 +106,12 @@ class GameTreeNode:
                 move_list.append(create_new_successor_node(self._state, self._board, i, player))
                 continue
         self._children = move_list
-        ALL_OUTPUT.append(np.array([i.board for i in self._children]))
+        self.order_moves()
+        ALL_OUTPUT.append(np.array([(i.board, i.heuristic_val) for i in self._children]))
+
+    def order_moves(self):
+        """ Reorders generated nodes in descending order
+
+        """
+
+        self._children.sort(key=lambda x: x.heuristic_val, reverse=True)
