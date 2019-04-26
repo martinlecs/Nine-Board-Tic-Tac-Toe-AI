@@ -1,3 +1,4 @@
+
 import numpy as np
 
 PARTIAL_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -45,4 +46,4 @@ class Heuristic:
 
 
 if __name__ == "__main__":
-    print(Heuristic.heuristic3(PARTIAL_BOARD))
+print(Heuristic.heuristic3(PARTIAL_BOARD))
