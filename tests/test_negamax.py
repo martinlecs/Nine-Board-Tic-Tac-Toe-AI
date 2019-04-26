@@ -4,8 +4,10 @@ import numpy as np
 import pytest
 
 from player.GameTreeNode import GameTreeNode
-from player.heuristic.Ash_Heuristic import Heuristic
-from player.negamax import minimax
+from player.Heuristic import Heuristic
+from player.AlphaBeta import AlphaBeta
+
+import cProfile
 
 
 INITIAL_BOARD = np.zeros((10, 10), dtype="int8")
@@ -93,8 +95,8 @@ def test_win_at_depth_1():
     """ Checks to see if negamax can find move to win in one turn """
     start_node = GameTreeNode(FILLED_BOARD, 4)
 
-    m = minimax(start_node, Heuristic, 3)
-    state, best_move = m.run()
+    m = AlphaBeta(start_node, Heuristic, 3)
+    best_move = m.run()
 
     print_depth_1_nodes(start_node, best_move, m.nodes_generated)
 
@@ -115,8 +117,8 @@ def test_negamax_avoid_loss_in_next_turn_1():
                        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
     start_node = GameTreeNode(state, 3)
-    m = minimax(start_node, Heuristic, 3)
-    _, best_move = m.run()
+    m = AlphaBeta(start_node, Heuristic, 3)
+    best_move = m.run()
 
     print_depth_1_nodes(start_node, best_move, m.nodes_generated)
 
@@ -138,16 +140,15 @@ def test_negamax_avoid_loss_in_next_turn_2():
                       [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]])
 
     start_node = GameTreeNode(state, 1)
-    m = minimax(start_node, Heuristic, 3)
-    _, best_move = m.run()
+    m = AlphaBeta(start_node, Heuristic, 3)
+    best_move = m.run()
 
-    print_depth_1_nodes(start_node, best_move, m.nodes_generated)
+    # print_depth_1_nodes(start_node, best_move, m.nodes_generated)
 
-    # assert False
     assert best_move != 7
 
 
 
 
 if __name__ == "__main__":
-    test_negamax_avoid_loss_in_next_turn_2()
+    cProfile.run('test_negamax_avoid_loss_in_next_turn_2()')

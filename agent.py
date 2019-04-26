@@ -5,10 +5,9 @@
 
 import socket
 import sys
-import math
 import numpy as np
-from player.negamax import minimax
-from player.heuristic.Ash_Heuristic import Heuristic
+from player.AlphaBeta import AlphaBeta
+from player.Heuristic import Heuristic
 from player.GameTreeNode import GameTreeNode
 
 PLAYER = 1
@@ -52,13 +51,12 @@ def play():
     global moves_made
     moves_made += 2
 
-    depth = 3 if moves_made < 25 else 5
+    depth = 3 if moves_made < 30 else 5
 
-    if moves_made > 35:
+    if moves_made > 40:
         depth = 7
 
-    _, n = minimax(GameTreeNode(boards, curr), Heuristic, depth).run()
-    # print("playing", n)
+    n = AlphaBeta(GameTreeNode(boards, curr), Heuristic, depth).run()
     place(curr, n, PLAYER)
     return n
 
@@ -67,7 +65,7 @@ def place(board, num, player):
     global curr
     curr = num
     boards[board][num] = player
-    print_board(boards)
+    # print_board(boards)
 
 
 # read what the server sent us and

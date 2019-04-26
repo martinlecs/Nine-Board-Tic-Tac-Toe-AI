@@ -1,5 +1,4 @@
-from player.heuristic.Ash_Heuristic import Heuristic
-import pytest
+from player.Heuristic import Heuristic
 import numpy as np
 
 
