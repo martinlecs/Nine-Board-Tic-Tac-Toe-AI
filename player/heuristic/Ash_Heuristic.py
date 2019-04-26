@@ -2,15 +2,15 @@ import numpy as np
 
 
 PARTIAL_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 0, 0, 0, 0, 1, -1, 0, -1],
-                          [0, 0, 0, 0, 1, -1, 0, 0, 0, 0],
-                          [0, -1, 0, 0, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 0, 1, -1, 0, 1, 0, 0, 0],
-                          [0, -1, -1, 1, 0, 1, 0, 0, 0, 0],
-                          [0, -1, 0, 0, 0, 0, 0, 0, 1, 0],
-                          [0, 0, 0, 0, -1, 1, 0, 0, 0, 0],
-                          [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-                          [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]])
+                          [0, 0, 0, 0, 0, 0, 0, -1, -1, -1],
+                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
 
 def print_board_row(board, a, b, c, i, j, k):
@@ -304,8 +304,8 @@ class Heuristic:
         vertical_one, vertical_two, opponent_vertical_one, opponent_vertical_two, winner_v, loser_v = self.__calculate_vertical(board)
         horizontal_one, horizontal_two, opponent_horizontal_one, opponent_horizontal_two, winner_h, loser_h = self.__calculate_horizontal(board)
 
-        winner = winner_d + winner_v #+ winner_h
-        loser = loser_d + loser_v #+ loser_h
+        winner = winner_d + winner_v + winner_h
+        loser = loser_d + loser_v + loser_h
         my_two = vertical_two + diagonal_two + horizontal_two
         my_one = vertical_one  + diagonal_one + horizontal_one
         opp_two = opponent_vertical_two + opponent_diagonal_two + opponent_horizontal_two
