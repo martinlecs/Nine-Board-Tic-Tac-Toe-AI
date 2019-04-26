@@ -6,7 +6,7 @@
 import socket
 import sys
 import numpy as np
-from player.negamax import minimax
+from player.AlphaBeta import AlphaBeta
 from player.Heuristic import Heuristic
 from player.GameTreeNode import GameTreeNode
 
@@ -20,6 +20,7 @@ PLAYER = 1
 # the boards are of size 10 because index 0 isn't used
 boards = np.zeros((10, 10), dtype="int8")
 curr = 0 # this is the current board to play in
+moves_made = 0
 
 # print a row
 # This is just ported from game.c
@@ -47,10 +48,15 @@ def print_board(board):
 
 # choose a move to play
 def play():
-    print_board(boards)
+    global moves_made
+    moves_made += 2
 
-    next_board, n = minimax(GameTreeNode(boards[curr]), Heuristic.heuristic, 7)
-    # print("playing", n)
+    depth = 3 if moves_made < 30 else 5
+
+    if moves_made > 40:
+        depth = 7
+
+    n = AlphaBeta(GameTreeNode(boards, curr), Heuristic, depth).run()
     place(curr, n, PLAYER)
     return n
 
@@ -59,6 +65,8 @@ def place(board, num, player):
     global curr
     curr = num
     boards[board][num] = player
+    # print_board(boards)
+
 
 # read what the server sent us and
 # only parses the strings that are necessary
