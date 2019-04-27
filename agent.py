@@ -6,8 +6,8 @@
 import socket
 import sys
 import numpy as np
-from player.negamax import minimax
-from player.heuristic.Ash_Heuristic import Heuristic
+from player.AlphaBeta import AlphaBeta
+from player.Heuristic import Heuristic
 from player.GameTreeNode import GameTreeNode
 
 PLAYER = 1
@@ -20,6 +20,7 @@ PLAYER = 1
 # the boards are of size 10 because index 0 isn't used
 boards = np.zeros((10, 10), dtype="int8")
 curr = 0 # this is the current board to play in
+moves_made = 0
 
 # print a row
 # This is just ported from game.c
@@ -47,9 +48,7 @@ def print_board(board):
 
 # choose a move to play
 def play():
-
-    _, n = minimax(GameTreeNode(boards, curr), Heuristic, 3)
-    # print("playing", n)
+    n = AlphaBeta(GameTreeNode(boards, curr), Heuristic, 3).run()
     place(curr, n, PLAYER)
     return n
 
