@@ -41,5 +41,7 @@ def test_heuristic_on_partial_board(heuristic_func):
     assert heuristic_func.compute_heuristic(PARTIAL_BOARD, 1) == 7
 
 
+# def test_heuristic_calc_depth():
+
 
 

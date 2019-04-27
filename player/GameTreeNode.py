@@ -43,10 +43,6 @@ class GameTreeNode:
     def move(self):
         return self._board
 
-    # @property
-    # def heuristic_val(self):
-    #     return self._heuristic_val
-
     @property
     def alpha(self):
         return self._alpha
@@ -89,7 +85,7 @@ class GameTreeNode:
 
         return False
 
-    def generate_moves(self, player):
+    def generate_moves(self, player, depth):
         """ Generates all possible moves for current player by looking at empty squares as potential moves
             Player 1 = 1, Player 2 = -1
 
@@ -106,12 +102,13 @@ class GameTreeNode:
             if board[i] == 0:
                 move_list.append(create_new_successor_node(self._state, i, player))
         self._children = move_list
-        # self.order_moves(depth)
+        self.order_moves(depth)
 
     def order_moves(self, depth):
         """ Reorders generated nodes in descending order
 
         """
+        depth = 1 if depth == 0 else depth
         h = Heuristic()
         h.load()
         self._children.sort(key=lambda x: h.compute_heuristic(x.state, depth), reverse=True)

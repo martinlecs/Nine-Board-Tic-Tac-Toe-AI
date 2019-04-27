@@ -47,18 +47,18 @@ def print_depth_1_nodes(node, best_move, nodes_generated):
     print("########## DEPTH 1 NODES ##########\n")
     print("Nodes generated: {}".format(nodes_generated))
     print("Best move = {}\n".format(best_move))
-    for c in node.children:
-        print("Global state generated from move {} played on board {}\n".format(c.get_board_num(), c.parent))
-        print(c.state)
-        print("\nMove performed on board {}:".format(c.parent))
-        print("alpha value = {}\n".format(c.alpha))
-        print_board(c.state[c.parent])
-
-        if c.children:
-            print("Next board: {}".format(c.get_board_num()))
-            print_board(c.board)
-        else:
-            print("WIN STATE\n\n")
+    # for c in node.children:
+    #     print("Global state generated from move {} played on board {}\n".format(c.get_board_num(), c.parent))
+    #     print(c.state)
+    #     print("\nMove performed on board {}:".format(c.parent))
+    #     print("alpha value = {}\n".format(c.alpha))
+    #     print_board(c.state[c.parent])
+    #
+    #     if c.children:
+    #         print("Next board: {}".format(c.get_board_num()))
+    #         print_board(c.board)
+    #     else:
+    #         print("WIN STATE\n\n")
 
 
 @pytest.fixture(scope='function')
@@ -132,9 +132,9 @@ def test_negamax_avoid_loss_in_next_turn_2(heuristic_func):
     m = AlphaBeta(start_node, heuristic_func, 5)
     best_move = m.run()
 
-    print_depth_1_nodes(start_node, best_move, m.nodes_generated)
+    # print_depth_1_nodes(start_node, best_move, m.nodes_generated)
 
-    assert False
+    # assert False
     # assert best_move != 7
 
 def test_avoid_loss_in_next_turn_3(heuristic_func):

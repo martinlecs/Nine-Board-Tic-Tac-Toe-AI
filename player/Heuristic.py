@@ -27,6 +27,7 @@ class Heuristic:
         self._precalc_boards = None
 
     def load(self):
+        print('in load')
         if not self._precalc_boards:
             try:
                 with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'rb') as file:
@@ -316,11 +317,12 @@ class Heuristic:
 
         """
         total_heuristic = 0
+        total_heuristic2 = 0
         for board in global_board:
             #print (total_heuristic)
             #print("!!!!!")
             total_heuristic += self._precalc_boards[self.__hash(board)]
-        return total_heuristic // depth
+        return total_heuristic / depth
 
     def __precompute_heuristic_values(self):
 

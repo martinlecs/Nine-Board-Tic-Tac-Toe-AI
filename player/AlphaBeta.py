@@ -35,7 +35,8 @@ class AlphaBeta:
         """ Run the minimax search with alpha-beta pruning """
 
         player = 1
-        self.__alpha_beta(self._node, self._depth, -math.inf, math.inf, player)
+        depth = 0
+        self.__alpha_beta(self._node, depth, -math.inf, math.inf, player)
         best_move = max(self._node.children, key=lambda c: c.alpha)
 
         return best_move.move
@@ -56,31 +57,33 @@ class AlphaBeta:
 
         """
         # TODO: Fix is_terminal_node to handle draws
-        if node.is_terminal_node(node.state) or depth == 0:
-            return self._eval_cls.compute_heuristic(node.state, self._depth - depth)
+        if node.is_terminal_node(node.state) or depth == self._depth:
+            return self._eval_cls.compute_heuristic(node.state, depth)
 
         if player == 1:
-            bestVal = -math.inf
 
-            node.generate_moves(player)
+            node.generate_moves(player, depth)
             self._nodes_generated += len(node.children)
 
+            bestVal = -math.inf
+
             for child in node.children:
-                bestVal = max(bestVal, self.__alpha_beta(child, depth - 1, alpha, beta, -player))
+                child.alpha = self.__alpha_beta(child, depth + 1, alpha, beta, -player)
+                bestVal = max(bestVal, child.alpha)
                 alpha = max(alpha, bestVal)
-                child.alpha = bestVal
                 if beta <= alpha:
                     return bestVal
             return bestVal
 
         else:
 
-            node.generate_moves(player)
+            node.generate_moves(player, depth)
             self._nodes_generated += len(node.children)
+
             bestVal = math.inf
 
             for child in node.children:
-                bestVal = min(bestVal, self.__alpha_beta(child, depth - 1, alpha, beta, -player))
+                bestVal = min(bestVal, self.__alpha_beta(child, depth + 1, alpha, beta, -player))
                 beta = min(beta, bestVal)
                 child.beta = bestVal
                 if beta <= alpha:

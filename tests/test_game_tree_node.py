@@ -71,7 +71,7 @@ def test_init_game_tree_node(initial_board_state_node):
 
 def test_no_moves_can_be_generated(full_board_state_node):
     g = full_board_state_node
-    g.generate_moves(CURRENT_PLAYER)
+    g.generate_moves(CURRENT_PLAYER, 1)
     assert len(g.children) == 0
 
 #
