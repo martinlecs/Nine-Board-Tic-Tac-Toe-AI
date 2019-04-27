@@ -147,8 +147,80 @@ def test_negamax_avoid_loss_in_next_turn_2():
 
     assert best_move != 7
 
+def test_avoid_loss_in_next_turn_3():
+    """ Checks to see that negamax avoids allowing the opponent to win in the next turn """
+
+
+    state = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 1, -1, -1, 0, 1, 0, -1, 0, 0],
+                      [0, 0, 0, 1, -1, 0, -1, 1, 0, 0],
+                      [0, 0, 1, 1, 0, -1, 0, 0, 0, -1],
+                      [0, 0, -1, 0, 1, 0, 0, 0, -1, 0],     # the board we are need to make a move on
+                      [0, -1, 0, 0, 0, 1, 1, -1, 0, -1],
+                      [0, -1, 1, 0, 0, 0, 0, -1, 1, 0],
+                      [0, 1, 0, 0, 0, -1, 1, 0, -1, 1],
+                      [0, 0, 0, 0, -1, 1, 0, 0, 0, 1],
+                      [0, 1, 0, -1, 1, 0, -1, 0, 0, 0]])
+
+    start_node = GameTreeNode(state, 4)
+    m = AlphaBeta(start_node, Heuristic, 3)
+    best_move = m.run()
+
+    print_depth_1_nodes(start_node, best_move, m.nodes_generated)
+
+    assert best_move != 6
+
+
+def test_avoid_losing_in_next_turn_4():
+    """ Checks to see that negamax avoids allowing the opponent to win in the next turn """
+
+    state = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 1, -1, -1, 0, 1, 0, -1, 0, 0],
+                      [0, 0, 0, 1, -1, 0, -1, 1, 0, 0],
+                      [0, 0, 1, 1, 0, -1, 0, 0, 0, -1],
+                      [0, 0, -1, 0, 1, 0, 0, 0, -1, 0],  # the board we are need to make a move on
+                      [0, -1, 0, 0, 0, 1, 1, -1, 0, -1],
+                      [0, -1, 1, 0, 0, 0, 0, -1, 1, 0],
+                      [0, 1, 0, 0, 0, -1, 1, 0, -1, 1],
+                      [0, 0, 0, 0, -1, 1, 0, 0, 0, 1],
+                      [0, 1, 0, -1, 1, 0, -1, 0, 0, 0]])
+
+    start_node = GameTreeNode(state, 4)
+    m = AlphaBeta(start_node, Heuristic, 3)
+    best_move = m.run()
+
+    print_depth_1_nodes(start_node, best_move, m.nodes_generated)
+
+    assert best_move != 6
+
+def test_generate_best_move_opponent_depth_2():
+    state = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, -1, -1, 0, 1, 0, 0, 0, 0],
+                      [0, 0, 0, 1, 0, -1, 0, 0, 0, 0],
+                      [0, 0, 0, -1, 1, -1, -1, 0, 1, 1],
+                      [0, 0, 1, 0, 0, 0, 0, -1, -1, 0],     # board that we make a move on
+                      [0, 1, 0, 1, 0, -1, 0, 1, -1, -1],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                      [0, -1, 0, 0, -1, 1, 0, 0, 0, 0],
+                      [0, 1, 0, 1, -1, 0, 0, 0, 0, 0],
+                      [0, 0, 0, -1, 0, 1, 0, 1, 0, -1]])
+
+    start_node = GameTreeNode(state, 4)
+    m = AlphaBeta(start_node, Heuristic, 3)
+    best_move = m.run()
+
+    print_depth_1_nodes(start_node, best_move, m.nodes_generated)
+
+    # first_move_node = max(start_node.children, key=lambda c: c.alpha)
+    # second_move_node = max(first_move_node.children, key=lambda c: c.alpha)
+    # print_depth_1_nodes(first_move_node, second_move_node.move, m.nodes_generated)
+
+    assert best_move == 6
+
+
 
 
 
 if __name__ == "__main__":
-    cProfile.run('test_negamax_avoid_loss_in_next_turn_2()')
+    # cProfile.run('test_negamax_avoid_loss_in_next_turn_2()')
+    test_generate_best_move_opponent_depth_2()
