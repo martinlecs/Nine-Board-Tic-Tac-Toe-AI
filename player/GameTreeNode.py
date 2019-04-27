@@ -1,5 +1,6 @@
 import math
 import os
+from typing import Callable
 
 import numpy as np
 from player.Heuristic import Heuristic
@@ -21,10 +22,10 @@ class GameTreeNode:
         self._state = state
         self._board = board
         self._children = None
-        self._heuristic_val = Heuristic(state).heuristic()
 
         # For debugging purposes
         self._alpha = -math.inf
+        self._beta = math.inf
         self._parent = parent
 
     @property
@@ -42,10 +43,6 @@ class GameTreeNode:
     @property
     def move(self):
         return self._board
-
-    @property
-    def heuristic_val(self):
-        return self._heuristic_val
 
     @property
     def alpha(self):
@@ -89,7 +86,7 @@ class GameTreeNode:
 
         return False
 
-    def generate_moves(self, player):
+    def generate_moves(self, player: int, eval_fn: Callable, depth: int ):
         """ Generates all possible moves for current player by looking at empty squares as potential moves
             Player 1 = 1, Player 2 = -1
 
@@ -105,12 +102,11 @@ class GameTreeNode:
         for i in range(1, len(board)):
             if board[i] == 0:
                 move_list.append(create_new_successor_node(self._state, i, player))
+
+        # order children
+        depth = 1 if depth == 0 else depth
+        move_list.sort(key=lambda x: eval_fn.compute_heuristic(x.state, depth), reverse=True)
+
         self._children = move_list
-        self.order_moves()
 
-    def order_moves(self):
-        """ Reorders generated nodes in descending order
 
-        """
-
-        self._children.sort(key=lambda x: x.heuristic_val, reverse=True)

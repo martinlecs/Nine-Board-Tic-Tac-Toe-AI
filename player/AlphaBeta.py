@@ -25,12 +25,7 @@ class AlphaBeta:
         self._depth = depth
 
         # Debugging
-        self._players = []
         self._nodes_generated = 0
-
-    @property
-    def players(self):
-        return self._players
 
     @property
     def nodes_generated(self):
@@ -38,15 +33,15 @@ class AlphaBeta:
 
     def run(self):
         """ Run the minimax search with alpha-beta pruning """
+
         player = 1
-        print(self.__alpha_beta(self._node, self._eval_cls, self._depth, -math.inf, math.inf, player))
+        depth = 0
+        self.__alpha_beta(self._node, depth, -math.inf, math.inf, player)
         best_move = max(self._node.children, key=lambda c: c.alpha)
-        # print(best_move.state)
-        # print()
 
         return best_move.move
 
-    def __alpha_beta(self, node: GameTreeNode, eval_cls: Callable, depth: int, alpha: float, beta: float, player: int):
+    def __alpha_beta(self, node: GameTreeNode, depth: int, alpha: float, beta: float, player: int):
         """ Search game to determine best action; uses negamax implementation and alpha-beta pruning.
 
         Args:
@@ -62,34 +57,35 @@ class AlphaBeta:
 
         """
         # TODO: Fix is_terminal_node to handle draws
-        if node.is_terminal_node(node.state) or depth == 0:
-            return node.heuristic_val
+        if node.is_terminal_node(node.state) or depth == self._depth:
+            return self._eval_cls.compute_heuristic(node.state, depth)
 
         if player == 1:
+
+            node.generate_moves(player, self._eval_cls, depth)
+            self._nodes_generated += len(node.children)
+
             bestVal = -math.inf
 
-            node.generate_moves(player)
-            # self._nodes_generated += len(node.children)
-            # self._players.append(player)
-
             for child in node.children:
-                bestVal = max(bestVal, self.__alpha_beta(child, eval_cls, depth - 1, alpha, beta, -player))
+                child.alpha = self.__alpha_beta(child, depth + 1, alpha, beta, -player)
+                bestVal = max(bestVal, child.alpha)
                 alpha = max(alpha, bestVal)
-                child.alpha = bestVal
                 if beta <= alpha:
                     return bestVal
             return bestVal
 
         else:
 
-            node.generate_moves(player)
-            # self._nodes_generated += len(node.children)
-            # self._players.append(player)
+            node.generate_moves(player, self._eval_cls, depth)
+            self._nodes_generated += len(node.children)
+
             bestVal = math.inf
 
             for child in node.children:
-                bestVal = min(bestVal, self.__alpha_beta(child, eval_cls, depth - 1, alpha, beta, -player))
+                bestVal = min(bestVal, self.__alpha_beta(child, depth + 1, alpha, beta, -player))
                 beta = min(beta, bestVal)
+                child.beta = bestVal
                 if beta <= alpha:
                     return bestVal
             return bestVal
