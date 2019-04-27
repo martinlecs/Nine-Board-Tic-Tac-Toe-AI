@@ -21,7 +21,7 @@ class GameTreeNode:
         self._state = state
         self._board = board
         self._children = None
-        self._heuristic_val = Heuristic(state).heuristic()
+        # self._heuristic_val = Heuristic(state).heuristic()
 
         # For debugging purposes
         self._alpha = -math.inf
@@ -44,9 +44,9 @@ class GameTreeNode:
     def move(self):
         return self._board
 
-    @property
-    def heuristic_val(self):
-        return self._heuristic_val
+    # @property
+    # def heuristic_val(self):
+    #     return self._heuristic_val
 
     @property
     def alpha(self):
@@ -107,7 +107,7 @@ class GameTreeNode:
             if board[i] == 0:
                 move_list.append(create_new_successor_node(self._state, i, player))
         self._children = move_list
-        self.order_moves()
+        # self.order_moves()
 
     def order_moves(self):
         """ Reorders generated nodes in descending order

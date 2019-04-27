@@ -1,38 +1,16 @@
 import numpy as np
+import itertools
+import pickle
+import os
 
+ALPHA = 5
+BETA = 1
+GAMMA = 4
+DELTA = 1
+WIN = 1000000
+LOSE = -100000
 
-PARTIAL_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 0, -1, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 0, 1, -1, 0, 1, 0, 0, 1],
-                          [0, 0, 0, -1, 0, 0, 1, 0, 0, 0],
-                          [0, 1, 0, 0, 1, -1, 0, 0, 0, 0],
-                          [0, 0, 0, -1, 0, -1, 0, 0, 0, 0],
-                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
-
-
-def print_board_row(board, a, b, c, i, j, k):
-    # The marking script doesn't seem to like this either, so just take it out to submit
-    print("", board[a][i], board[a][j], board[a][k], end = " | ")
-    print(board[b][i], board[b][j], board[b][k], end = " | ")
-    print(board[c][i], board[c][j], board[c][k])
-
-
-def print_board(board):
-    print_board_row(board, 1,2,3,1,2,3)
-    print_board_row(board, 1,2,3,4,5,6)
-    print_board_row(board, 1,2,3,7,8,9)
-    print(" ------+-------+------")
-    print_board_row(board, 4,5,6,1,2,3)
-    print_board_row(board, 4,5,6,4,5,6)
-    print_board_row(board, 4,5,6,7,8,9)
-    print(" ------+-------+------")
-    print_board_row(board, 7,8,9,1,2,3)
-    print_board_row(board, 7,8,9,4,5,6)
-    print_board_row(board, 7,8,9,7,8,9)
-    print()
+SAVE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 class Heuristic:
@@ -45,14 +23,16 @@ class Heuristic:
 
     """
 
-    def __init__(self, global_board):
-        self._global_board = global_board
-        self._alpha = 5
-        self._beta = 1
-        self._gamma = 4
-        self._delta = 1
-        self._win = 1000000
-        self._lose = -100000
+    def __init__(self):
+        self._precalc_boards = None
+
+    def load(self):
+        if not self._precalc_boards:
+            try:
+                with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'rb') as file:
+                    self._precalc_boards = pickle.load(file)
+            except Exception as e:
+                self._precalc_boards = self.__precompute_heuristic_values()
 
     @staticmethod
     def __calculate_diagonal(board: np.ndarray):
@@ -311,7 +291,7 @@ class Heuristic:
         opp_two = opponent_vertical_two + opponent_diagonal_two + opponent_horizontal_two
         opp_one = opponent_vertical_one + opponent_diagonal_one + opponent_horizontal_one
 
-        heuristic = self._win * winner + self._lose * loser + self._alpha * my_two + self._beta * my_one - self._gamma * opp_two - self._delta * opp_one
+        heuristic = WIN * winner + LOSE * loser + ALPHA * my_two + BETA * my_one - GAMMA * opp_two - DELTA * opp_one
 
         #print(my_two)
         #print (my_one)
@@ -320,7 +300,15 @@ class Heuristic:
         #print ("****")
         return heuristic
 
-    def heuristic(self):
+    @staticmethod
+    def __hash(board: np.ndarray):
+        hash = 0
+        for x in range(1, 10):
+            hash += (board[x] * 3 ** x)
+
+        return hash
+
+    def compute_heuristic(self, global_board):
         """ Calculates the total heuristic value for the global board.
 
         Returns:
@@ -328,15 +316,55 @@ class Heuristic:
 
         """
         total_heuristic = 0
-        for board in self._global_board:
+        for board in global_board:
             #print (total_heuristic)
             #print("!!!!!")
-            total_heuristic += self.__calculate_board_heuristic(board)
-
+            total_heuristic += self._precalc_boards[self.__hash(board)]
         return total_heuristic
+
+    def __precompute_heuristic_values(self):
+
+        # generate all possible states
+        num_to_select = 9   # number of squares in tic-tac-toe board
+        possible_values = [0, 1, -1]
+        result = list(itertools.product(possible_values, repeat=num_to_select))
+
+        # add extra empty element to head of list
+        modified_result = []
+        for i in result:
+            n = list(i)
+            n.insert(0, 0)
+            modified_result.append(n)
+
+        np_result = np.array(modified_result)
+        heuristic_dict = {}
+        for i in np_result:
+            heuristic_dict[self.__hash(i)] = self.__calculate_board_heuristic(i)
+
+        # board_dict= {}
+        # for j in np_result:
+        #     board_dict[hash(j)] = j
+
+        with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'wb') as file:
+            pickle.dump(heuristic_dict, file)
+
+        return heuristic_dict
 
 
 if __name__ == "__main__":
-    h = Heuristic(PARTIAL_BOARD)
-    print_board(PARTIAL_BOARD)
-    print(h.heuristic())
+    h = Heuristic()
+    h.load()
+
+    PARTIAL_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                              [0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+
+    print(h.compute_heuristic(PARTIAL_BOARD))
+

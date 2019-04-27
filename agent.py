@@ -48,7 +48,9 @@ def print_board(board):
 
 # choose a move to play
 def play():
-    n = AlphaBeta(GameTreeNode(boards, curr), Heuristic, 3).run()
+    h = Heuristic()
+    h.load()
+    n = AlphaBeta(GameTreeNode(boards, curr), h, 5).run()
     place(curr, n, PLAYER)
     return n
 
