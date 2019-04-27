@@ -48,15 +48,7 @@ def print_board(board):
 
 # choose a move to play
 def play():
-    global moves_made
-    moves_made += 2
-
-    depth = 3 if moves_made < 30 else 5
-
-    if moves_made > 40:
-        depth = 7
-
-    n = AlphaBeta(GameTreeNode(boards, curr), Heuristic, depth).run()
+    n = AlphaBeta(GameTreeNode(boards, curr), Heuristic, 3).run()
     place(curr, n, PLAYER)
     return n
 
@@ -65,7 +57,7 @@ def place(board, num, player):
     global curr
     curr = num
     boards[board][num] = player
-    # print_board(boards)
+    print_board(boards)
 
 
 # read what the server sent us and

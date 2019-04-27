@@ -103,3 +103,7 @@ def test_terminal_board_false():
 
 def test_no_generated_moves_on_terminal_node():
     board = np.array([0, 0, 1, 0, 1, 1, -1, 0, 1, -1])
+
+
+def test_board_representation():
+    pass

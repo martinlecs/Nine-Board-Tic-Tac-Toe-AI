@@ -39,12 +39,13 @@ class AlphaBeta:
     def run(self):
         """ Run the minimax search with alpha-beta pruning """
         player = 1
-        self.__alpha_beta(self._node, self._eval_cls, self._depth, -math.inf, math.inf, player)
+        print(self.__alpha_beta(self._node, self._eval_cls, self._depth, -math.inf, math.inf, player))
         best_move = max(self._node.children, key=lambda c: c.alpha)
+        # print(best_move.state)
+        # print()
 
         return best_move.move
 
-    #TODO: consider using a bool for player variable instead of an int
     def __alpha_beta(self, node: GameTreeNode, eval_cls: Callable, depth: int, alpha: float, beta: float, player: int):
         """ Search game to determine best action; uses negamax implementation and alpha-beta pruning.
 
