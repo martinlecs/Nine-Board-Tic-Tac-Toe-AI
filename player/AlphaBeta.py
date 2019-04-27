@@ -90,6 +90,7 @@ class AlphaBeta:
             for child in node.children:
                 bestVal = min(bestVal, self.__alpha_beta(child, eval_cls, depth - 1, alpha, beta, -player))
                 beta = min(beta, bestVal)
+                child.beta = bestVal
                 if beta <= alpha:
                     return bestVal
             return bestVal

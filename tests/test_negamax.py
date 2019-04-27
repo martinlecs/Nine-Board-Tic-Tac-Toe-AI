@@ -195,31 +195,32 @@ def test_avoid_losing_in_next_turn_4():
 
 def test_generate_best_move_opponent_depth_2():
     state = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 1, 1, 0, 1, -1, 0, -1, 0, 0],
-                      [0, 0, -1, 1, 0, 1, -1, 0, 0, 1],
-                      [0, 0, -1, 0, 0, 0, 1, 0, -1, 1],
-                      [0, 0, 0, 0, 1, 0, -1, 1, 0, -1],     # board that we make a move on
-                      [0, -1, 0, 0, 0, 1, 0, -1, 0, -1],
-                      [0, -1, 1, 0, -1, 0, 0, 0, 1, 0],
-                      [0, 0, -1, -1, 0, 0, 0, 1, 1, 0],
-                      [0, 1, 0, -1, 0, 0, -1, 0, -1, 0],
-                      [0, -1, 0, 0, -1, 1, 0, 0, 1, 0]])
+                      [0, 0, -1, -1, 0, 1, 0, 0, 0, 0],
+                      [0, 0, 0, 1, 0, -1, 0, 0, 0, 0],
+                      [0, 0, 0, -1, 1, -1, -1, 0, 1, 1],
+                      [0, 0, 1, 0, 0, 0, 0, -1, -1, 0],     # board that we make a move on
+                      [0, 1, 0, 1, 0, -1, 0, 1, -1, -1],
+                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                      [0, -1, 0, 0, -1, 1, 0, 0, 0, 0],
+                      [0, 1, 0, 1, -1, 0, 0, 0, 0, 0],
+                      [0, 0, 0, -1, 0, 1, 0, 1, 0, -1]])
 
-    start_node = GameTreeNode(state, 8)
-    m = AlphaBeta(start_node, Heuristic, 3)
+    start_node = GameTreeNode(state, 4)
+    m = AlphaBeta(start_node, Heuristic, 5)
     best_move = m.run()
 
-    print_depth_1_nodes(start_node, best_move, m.nodes_generated)
+    # print_depth_1_nodes(start_node, best_move, m.nodes_generated)
 
-    first_move_node = max(start_node.children, key=lambda c: c.alpha)
-    print("move: {}".format(first_move_node.move))
-    # second_move_node = max(first_move_node.children, key=lambda c: c.alpha)
-    # print_depth_1_nodes(first_move_node, second_move_node.move, m.nodes_generated)
+    # first_move_node = max(start_node.children, key=lambda c: c.alpha)
 
-    assert False
+    p1 = start_node.children
+    o1 = [i.children for i in p1]
+    # p2 = [j.children for j in o1]
+    print(o1)
 
+    # print_depth_1_nodes(third_level_children, 0, m.nodes_generated)
 
-
+    assert best_move == 6
 
 
 if __name__ == "__main__":
