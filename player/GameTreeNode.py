@@ -25,6 +25,7 @@ class GameTreeNode:
 
         # For debugging purposes
         self._alpha = -math.inf
+        self._beta = math.inf
         self._parent = parent
 
     @property
