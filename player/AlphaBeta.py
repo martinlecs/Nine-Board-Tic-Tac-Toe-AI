@@ -25,12 +25,7 @@ class AlphaBeta:
         self._depth = depth
 
         # Debugging
-        self._players = []
         self._nodes_generated = 0
-
-    @property
-    def players(self):
-        return self._players
 
     @property
     def nodes_generated(self):
@@ -62,14 +57,13 @@ class AlphaBeta:
         """
         # TODO: Fix is_terminal_node to handle draws
         if node.is_terminal_node(node.state) or depth == 0:
-            return self._eval_cls.compute_heuristic(node.state)
+            return self._eval_cls.compute_heuristic(node.state, self._depth - depth)
 
         if player == 1:
             bestVal = -math.inf
 
             node.generate_moves(player)
-            # self._nodes_generated += len(node.children)
-            # self._players.append(player)
+            self._nodes_generated += len(node.children)
 
             for child in node.children:
                 bestVal = max(bestVal, self.__alpha_beta(child, depth - 1, alpha, beta, -player))
@@ -82,8 +76,7 @@ class AlphaBeta:
         else:
 
             node.generate_moves(player)
-            # self._nodes_generated += len(node.children)
-            # self._players.append(player)
+            self._nodes_generated += len(node.children)
             bestVal = math.inf
 
             for child in node.children:

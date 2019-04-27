@@ -308,7 +308,7 @@ class Heuristic:
 
         return hash
 
-    def compute_heuristic(self, global_board):
+    def compute_heuristic(self, global_board, depth):
         """ Calculates the total heuristic value for the global board.
 
         Returns:
@@ -320,7 +320,7 @@ class Heuristic:
             #print (total_heuristic)
             #print("!!!!!")
             total_heuristic += self._precalc_boards[self.__hash(board)]
-        return total_heuristic
+        return total_heuristic // depth
 
     def __precompute_heuristic_values(self):
 
