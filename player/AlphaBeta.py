@@ -56,7 +56,6 @@ class AlphaBeta:
             alpha (float) :
 
         """
-        # TODO: Fix is_terminal_node to handle draws
         if node.is_terminal_node(node.state) or depth == self._depth:
             return self._eval_cls.compute_heuristic(node.state, depth)
 

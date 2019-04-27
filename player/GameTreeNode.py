@@ -3,7 +3,6 @@ import os
 from typing import Callable
 
 import numpy as np
-from player.Heuristic import Heuristic
 
 NPY_OUTPUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'tests', 'numpy_output')
 
@@ -63,7 +62,7 @@ class GameTreeNode:
         return len(self._children)
 
     @staticmethod
-    def is_terminal_node(state: np.ndarray):
+    def is_terminal_node(state: np.ndarray, board_type='state'):
         """ Check is a state is a win-state for the player """
 
         def check_equal(lst):
@@ -80,9 +79,12 @@ class GameTreeNode:
             diagonals = any([check_equal(board[[1, 5, 9]]), check_equal(board[[3, 5, 7]])])
             return any([rows, columns, diagonals])
 
-        for s in state:
-            if check_win_state_board(s):
-                return True
+        if board_type == 'state':
+            for s in state:
+                if check_win_state_board(s):
+                    return True
+        elif board_type == 'board':
+            return check_win_state_board(state)
 
         return False
 
