@@ -27,7 +27,6 @@ class Heuristic:
         self._precalc_boards = None
 
     def load(self):
-        print('in load')
         if not self._precalc_boards:
             try:
                 with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'rb') as file:

@@ -62,7 +62,7 @@ class AlphaBeta:
 
         if player == 1:
 
-            node.generate_moves(player, depth)
+            node.generate_moves(player, self._eval_cls, depth)
             self._nodes_generated += len(node.children)
 
             bestVal = -math.inf
@@ -77,7 +77,7 @@ class AlphaBeta:
 
         else:
 
-            node.generate_moves(player, depth)
+            node.generate_moves(player, self._eval_cls, depth)
             self._nodes_generated += len(node.children)
 
             bestVal = math.inf

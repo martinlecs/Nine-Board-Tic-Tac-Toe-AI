@@ -129,7 +129,7 @@ def test_negamax_avoid_loss_in_next_turn_2(heuristic_func):
                       [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]])
 
     start_node = GameTreeNode(state, 1)
-    m = AlphaBeta(start_node, heuristic_func, 5)
+    m = AlphaBeta(start_node, heuristic_func, 7)
     best_move = m.run()
 
     # print_depth_1_nodes(start_node, best_move, m.nodes_generated)

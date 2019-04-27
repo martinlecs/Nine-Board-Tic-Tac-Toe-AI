@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 from player.GameTreeNode import GameTreeNode
+from player.Heuristic import Heuristic
 
 INITIAL_BOARD = np.zeros((10, 10), dtype="int8")
 FULL_BOARD = np.ones((10, 10), dtype="int8")
@@ -49,6 +50,13 @@ def multiple_wins_state_node():
     return GameTreeNode(BOARD_WITH_MULTIPLE_WINS, 1)
 
 
+@pytest.fixture
+def heuristic_func():
+    h = Heuristic()
+    h.load()
+    return h
+
+
 def test_init_game_tree_node(initial_board_state_node):
     g = initial_board_state_node
     assert np.array_equal(g.board, INITIAL_BOARD[5])
@@ -69,9 +77,9 @@ def test_init_game_tree_node(initial_board_state_node):
 #     assert np.array_equal([i.board for i in g.children], result) and np.array_equal(g.board, INITIAL_BOARD[5])
 
 
-def test_no_moves_can_be_generated(full_board_state_node):
+def test_no_moves_can_be_generated(full_board_state_node, heuristic_func):
     g = full_board_state_node
-    g.generate_moves(CURRENT_PLAYER, 1)
+    g.generate_moves(CURRENT_PLAYER, heuristic_func, 1)
     assert len(g.children) == 0
 
 #
