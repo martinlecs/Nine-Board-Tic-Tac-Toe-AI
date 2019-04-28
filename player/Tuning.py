@@ -9,7 +9,6 @@ from sklearn.model_selection import ParameterGrid
 import os
 import subprocess
 import socket
-import gc
 
 SAVE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -31,38 +30,41 @@ class Tuning:
         """ Perform a grid search that finds the best possible parameter values for the Heuristic function """
 
         param_grid = {'alpha': [1, 5, 10], 'beta': [1, 5, 10], 'gamma': [1, 5, 10],
-                      'delta': [1, 5, 10], 'win': [10, 100], 'lose': [-10, -100]}
+                      'delta': [1, 5, 10], 'win': [100], 'lose': [-100]}
 
         grid = ParameterGrid(param_grid)
 
         columns = ['alpha', 'beta', 'gamma', 'delta', 'win', 'lose', 'win_rate']
         df = pd.DataFrame(columns=columns)
 
-        for params in grid:
+        try:
+            for params in grid:
 
-            results = []
-            # run 10 times and get average result
-            for i in range(10):
-                agent = Agent(self._game, self._heuristic)
-                agent.set_heuristic_params(params['alpha'], params['beta'], params['gamma'], params['delta'],
-                                           params['win'], params['lose'])
+                results = []
+                # run 10 times and get average result
+                for i in range(5):
+                    agent = Agent(self._game, self._heuristic)
+                    agent.set_heuristic_params(params['alpha'], params['beta'], params['gamma'], params['delta'],
+                                               params['win'], params['lose'])
 
-                port = self.__get_port_number()
+                    port = self.__get_port_number()
 
-                # run a game instance. We go second.
-                subprocess.Popen(['../src/servt', '-p', str(port)])
-                subprocess.Popen(['../src/lookt.mac', '-p', str(port)])
-                result = agent.run(port=port)
+                    # run a game instance. We go second.
+                    subprocess.Popen(['../src/servt', '-p', str(port)])
+                    subprocess.Popen(['../src/lookt.mac', '-p', str(port)])
+                    result = agent.run(port=port)
 
-                # set Heuristic to calculate per call instead of using hash
-                results.append(result)
+                    # set Heuristic to calculate per call instead of using hash
+                    results.append(result)
 
-            average_result = mean(results)
-            df.loc[len(df)] = [params['alpha'], params['beta'], params['gamma'], params['delta'], params['win'],
-                               params['lose'], average_result]
-            gc.collect()
-
-        df.to_csv(os.path.join(SAVE_PATH, 'parameters.csv'))
+                average_result = mean(results)
+                df.loc[len(df)] = [params['alpha'], params['beta'], params['gamma'], params['delta'], params['win'],
+                                   params['lose'], average_result]
+        except Exception as e:
+            print(e)
+            df.to_csv(os.path.join(SAVE_PATH, 'parameters.csv'))
+        finally:
+            df.to_csv(os.path.join(SAVE_PATH, 'parameters.csv'))
 
 
 if __name__ == "__main__":
