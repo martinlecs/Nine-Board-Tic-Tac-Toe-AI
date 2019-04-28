@@ -27,9 +27,8 @@ class Tuning:
     def tune_parameters_bruteforce(self):
         """ Perform a grid search that finds the best possible parameter values for the Heuristic function """
 
-        param_grid = {'alpha': list(range(1, 21)), 'beta': list(range(1, 21)), 'gamma': list(range(1, 21)),
-                      'delta': list(range(1, 21)), 'win': list(range(0, 1100, 100)),
-                      'lose': list(range(-1000, 100, 100))}
+        param_grid = {'alpha': [0, 1, 5, 10, 20], 'beta': [0, 1, 5, 10, 20], 'gamma': [0, 1, 5, 10, 20],
+                      'delta': [0, 1, 5, 10, 20], 'win': [10, 100], 'lose': [-10, -100]}
 
         grid = ParameterGrid(param_grid)
 
