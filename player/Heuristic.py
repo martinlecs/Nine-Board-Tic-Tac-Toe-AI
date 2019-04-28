@@ -318,8 +318,8 @@ class Heuristic:
         """
         total_heuristic = 0
         for board in global_board:
-            # total_heuristic += self._precalc_boards[board.astype('i1').tostring()]
-            total_heuristic += self.__calculate_board_heuristic(board)
+            total_heuristic += self._precalc_boards[board.astype('i1').tostring()]
+            # total_heuristic += self.__calculate_board_heuristic(board)
         return total_heuristic / depth
 
     def __precompute_heuristic_values(self):
@@ -343,8 +343,8 @@ class Heuristic:
         for i in np_result:
             heuristic_dict[i.astype('i1').tostring()] = self.__calculate_board_heuristic(i)
 
-        with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'wb') as file:
-            pickle.dump(heuristic_dict, file)
+        # with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'wb') as file:
+        #     pickle.dump(heuristic_dict, file)
 
         return heuristic_dict
 

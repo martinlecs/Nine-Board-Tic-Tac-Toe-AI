@@ -38,6 +38,7 @@ class Game:
 
         def check_equal(lst):
             lst = list(lst)
+            # better to replace this with np.count_nonzeroes
             return lst[0] != 0 and lst.count(lst[0]) == len(lst)
 
         # check rows for win state

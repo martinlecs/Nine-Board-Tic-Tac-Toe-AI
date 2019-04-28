@@ -1,6 +1,8 @@
+import sys
+sys.path.append("..")
 import pandas as pd
-from player.Game import Game
-from player.Heuristic import Heuristic
+from Game import Game
+from Heuristic import Heuristic
 from agent import Agent
 from statistics import mean
 from sklearn.model_selection import ParameterGrid
@@ -27,8 +29,8 @@ class Tuning:
     def tune_parameters_bruteforce(self):
         """ Perform a grid search that finds the best possible parameter values for the Heuristic function """
 
-        param_grid = {'alpha': [0, 1, 5, 10, 20], 'beta': [0, 1, 5, 10, 20], 'gamma': [0, 1, 5, 10, 20],
-                      'delta': [0, 1, 5, 10, 20], 'win': [10, 100], 'lose': [-10, -100]}
+        param_grid = {'alpha': [1, 5, 10], 'beta': [1, 5, 10], 'gamma': [1, 5, 10],
+                      'delta': [1, 5, 10], 'win': [10, 100], 'lose': [-10, -100]}
 
         grid = ParameterGrid(param_grid)
 

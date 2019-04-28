@@ -2,9 +2,9 @@
 # Adapted from Sample starter bot by Zac Partrdige
 # 06/04/19
 
+import gc
 import socket
 import sys
-import time
 import numpy as np
 from player.AlphaBeta import AlphaBeta
 from player.Heuristic import Heuristic
@@ -53,7 +53,13 @@ class Agent:
     def play(self):
         """ Choose a move to play """
 
-        n = AlphaBeta(GameTreeNode(self._boards, self._curr), self._game, self._heuristic, 3).run()
+        state = GameTreeNode(self._boards, self._curr)
+        n = AlphaBeta(state, self._game, self._heuristic, 7).run()
+
+        # delete state and invoke garbage collector
+        del state
+        gc.collect()
+
         self.place(self._curr, n, self._player)
         return n
 
@@ -105,6 +111,11 @@ class Agent:
             for line in text.split("\n"):
                 response = self.parse(line)
                 if response == -1 or response == -2:
+
+                    # garbage collection
+                    self._boards = None
+                    gc.collect()
+
                     s.close()
                     return response
                 elif response > 0:
