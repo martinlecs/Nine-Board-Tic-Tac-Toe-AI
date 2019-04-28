@@ -42,13 +42,7 @@ class Game:
     def is_terminal(self, state: np.ndarray):
         """ Checks if there is a terminal node in a given global game state """
 
-        if not self._board_hashes or not self._win_states:
-            raise ClassNotLoaded
-
-        for s in state:
-            if self._win_states[self._board_hashes[s.tostring()]]:
-                return True
-        return False
+        return any([self._win_states[self._board_hashes[s.tostring()]] for s in state])
 
     @staticmethod
     def is_terminal_node(board: np.ndarray):

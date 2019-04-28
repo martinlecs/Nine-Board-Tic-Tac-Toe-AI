@@ -316,11 +316,20 @@ class Heuristic:
             heuristic (int): Heuristic value of the global board
 
         """
-        total_heuristic = 0
-        for board in global_board:
-            total_heuristic += self._precalc_boards[board.astype('i1').tostring()]
-            # total_heuristic += self.__calculate_board_heuristic(board)
-        return total_heuristic / depth
+        return sum([self._precalc_boards[b.tostring()] for b in global_board]) / depth
+
+        # marginally faster than above
+        # return sum([
+        #     self._precalc_boards[global_board[1].tostring()],
+        #     self._precalc_boards[global_board[2].tostring()],
+        #     self._precalc_boards[global_board[3].tostring()],
+        #     self._precalc_boards[global_board[4].tostring()],
+        #     self._precalc_boards[global_board[5].tostring()],
+        #     self._precalc_boards[global_board[6].tostring()],
+        #     self._precalc_boards[global_board[7].tostring()],
+        #     self._precalc_boards[global_board[8].tostring()],
+        #     self._precalc_boards[global_board[9].tostring()],
+        # ]) / depth
 
     def __precompute_heuristic_values(self):
 

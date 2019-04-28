@@ -68,7 +68,7 @@ class GameTreeNode:
 
         board = self.board
         move_list = []
-        for i in range(1, len(board)):
+        for i in range(1, 10):
             if board[i] == 0:
                 move_list.append(create_new_successor_node(self._state, i, player))
 
