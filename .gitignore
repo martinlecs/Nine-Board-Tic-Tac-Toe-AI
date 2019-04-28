@@ -4,6 +4,7 @@
 
 # Generated Assignment Files
 src/*
+*.pickle
 
 # Jetbrains
 

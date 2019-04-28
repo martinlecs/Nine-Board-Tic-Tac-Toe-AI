@@ -17,7 +17,7 @@ class Agent:
     def __init__(self, game: Game, heuristic: Heuristic):
         self._game = game
         self._heuristic = heuristic
-        self._boards = np.zeros((10, 10), dtype="int8")
+        self._boards = np.zeros((10, 10), dtype="i1")
         self._curr = 0
         self._player = 1
 

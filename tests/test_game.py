@@ -19,7 +19,7 @@ def test_not_win_state(game_cls):
                             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+                            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype='i1')
 
     assert game_cls.is_terminal(ALMOST_BOARD) is False
 

@@ -9,6 +9,7 @@ from sklearn.model_selection import ParameterGrid
 import os
 import subprocess
 import socket
+import gc
 
 SAVE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -59,6 +60,7 @@ class Tuning:
             average_result = mean(results)
             df.loc[len(df)] = [params['alpha'], params['beta'], params['gamma'], params['delta'], params['win'],
                                params['lose'], average_result]
+            gc.collect()
 
         df.to_csv(os.path.join(SAVE_PATH, 'parameters.csv'))
 

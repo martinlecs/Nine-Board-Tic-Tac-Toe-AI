@@ -4,8 +4,8 @@ from player.Game import Game
 from player.GameTreeNode import GameTreeNode
 from player.Heuristic import Heuristic
 
-INITIAL_BOARD = np.zeros((10, 10), dtype="int8")
-FULL_BOARD = np.ones((10, 10), dtype="int8")
+INITIAL_BOARD = np.zeros((10, 10), dtype="i1")
+FULL_BOARD = np.ones((10, 10), dtype="i1")
 PARTIAL_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0, 0, 0, 0, 0, 0, 1, -1, 0, -1],
                           [0, 0, 0, 0, 1, -1, 0, 0, 0, 0],
@@ -15,7 +15,7 @@ PARTIAL_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                           [0, -1, 0, 0, 0, 0, 0, 0, 1, 0],
                           [0, 0, 0, 0, -1, 1, 0, 0, 0, 0],
                           [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-                          [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]])
+                          [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]], dtype='i1')
 
 BOARD_WITH_MULTIPLE_WINS = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                                      [0, 1, 1, 1, 0, 0, 0, 0, 0, 0],    # rows
@@ -26,7 +26,7 @@ BOARD_WITH_MULTIPLE_WINS = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                                      [0, 0, 0, 1, 0, 0, 1, 0, 0, 1],
                                      [0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
                                      [0, 1, 0, 0, 0, 1, 0, 1, 0, 0],
-                                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
+                                     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype='i1')
 
 CURRENT_PLAYER = 1
 
@@ -90,17 +90,6 @@ def test_no_moves_can_be_generated(full_board_state_node, heuristic_func):
     g.generate_moves(CURRENT_PLAYER, heuristic_func, 1)
     assert len(g.children) == 0
 
-#
-# def test_partial_board_state(partial_board_state_node):
-#     g = partial_board_state_node
-#     g.generate_moves(CURRENT_PLAYER)
-#     possible_moves = np.array([[0, -1, -1, 1, 1, 1, 0, 0, 0, 0],
-#                                [0, -1, -1, 1, 0, 1, 1, 0, 0, 0],
-#                                [0, -1, -1, 1, 0, 1, 0, 1, 0, 0],
-#                                [0, -1, -1, 1, 0, 1, 0, 0, 1, 0],
-#                                [0, -1, -1, 1, 0, 1, 0, 0, 0, 1]])
-#     assert np.array_equal([i.board for i in g.children], possible_moves)
-
 
 def test_terminal_node_rows(game_cls, multiple_wins_state_node):
     g = multiple_wins_state_node
@@ -108,12 +97,12 @@ def test_terminal_node_rows(game_cls, multiple_wins_state_node):
 
 
 def test_terminal_board_true(game_cls):
-    board = np.array([[ 0 , 0 , 1 , 0 , 1 , 1 , -1 , 0 , 1 , -1]])
+    board = np.array([[ 0 , 0 , 1 , 0 , 1 , 1 , -1 , 0 , 1 , -1]], dtype='i1')
     assert game_cls.is_terminal(board) is True
 
 
 def test_terminal_board_false(game_cls):
-    board = np.array([[ 0 , 0 , 0 , 0 , 1 , 1 , -1 , 0 , 1 , -1]])
+    board = np.array([[ 0 , 0 , 0 , 0 , 1 , 1 , -1 , 0 , 1 , -1]], dtype='i1')
     assert game_cls.is_terminal(board) is False
 
 

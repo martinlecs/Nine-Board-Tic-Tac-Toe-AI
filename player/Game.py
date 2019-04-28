@@ -3,8 +3,11 @@ import os
 import pickle
 import numpy as np
 
-
 SAVE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+class ClassNotLoaded(Exception):
+    pass
 
 
 class Game:
@@ -12,23 +15,38 @@ class Game:
 
     def __init__(self):
         self._win_states = None
+        self._board_hashes = None
 
     def load(self):
         """ Loads necessary precomputed values into class for easy access """
 
         if not self._win_states:
             try:
+                # load board dict mapping numpy board states -> internal hash value
+                with open(os.path.join(SAVE_PATH, 'board_hashes.pickle'), 'rb') as file:
+                    self._board_hashes = pickle.load(file)
+
                 # load heuristic_values dict mapping hash values -> heuristic values
                 with open(os.path.join(SAVE_PATH, 'win_states.pickle'), 'rb') as file:
                     self._win_states = pickle.load(file)
-            except Exception as e:
-                self._win_states = self.__precompute_win_states()
+
+            except FileNotFoundError:
+                self.__precompute_board_hash()
+                self.__precompute_win_states()
+
+    def board_hash_value(self, board: np.ndarray):
+        """ Returns the corresponding hash value for a board """
+
+        return self._board_hashes[np.array(board).astype('i1').tostring()]
 
     def is_terminal(self, state: np.ndarray):
         """ Checks if there is a terminal node in a given global game state """
 
+        if not self._board_hashes or not self._win_states:
+            raise ClassNotLoaded
+
         for s in state:
-            if self._win_states[s.astype('i1').tostring()]:
+            if self._win_states[self._board_hashes[s.tostring()]]:
                 return True
         return False
 
@@ -49,42 +67,46 @@ class Game:
         diagonals = any([check_equal(board[[1, 5, 9]]), check_equal(board[[3, 5, 7]])])
         return any([rows, columns, diagonals])
 
-    def __precompute_win_states(self):
-        """ Precomputes all possible win states and saves them into a pickle file for later use. """
+    def __precompute_board_hash(self):
+        """ Function generates a dictionary containing all possible board variations and assigns each board a hash
+            The hash value is used to represent the board during the search and for calculating the heuristic without
+            having the need to store the entire board.
 
-        def hash(board: np.ndarray):
-            hash = 0
-            for x in range(1, 10):
-                hash += (board[x] * 3 ** x)
-
-            return hash
-
-        # TODO: implement O(1) lookup for hashes
+        """
 
         # generate all possible states
         num_to_select = 9  # number of squares in tic-tac-toe board
         possible_values = [0, 1, -1]
-        result = list(itertools.product(possible_values, repeat=num_to_select))
+        result = itertools.product(possible_values, repeat=num_to_select)  # creates a generator
 
-        modified_result = []
+        board_hash = {}
         for i in result:
-            n = list(i)
-            n.insert(0, 0)
-            modified_result.append(n)
+            i = list(i)
+            i.insert(0, 0)  # add leading zero to match formatting of np.array in agent.py
+            board_hash[np.array(i, dtype='i1').tostring()] = hash(np.array(i).astype('i1').tostring())
 
-        np_result = np.array(modified_result)
+        with open(os.path.join(SAVE_PATH, 'board_hashes.pickle'), 'wb') as file:
+            pickle.dump(board_hash, file)
 
-        # create dict that maps boards -> win states to save computation time
+        self._board_hashes = board_hash
+
+    def __precompute_win_states(self):
+        """ Precomputes all possible win states and stores them into a hash for faster computation. """
+
+        if not self._board_hashes:
+            raise FileNotFoundError("board_hashes.pickle was not generated or found.")
+
         win_states_dict = {}
 
         # must use a hash function that only acts on values
-        for i in np_result:
-            win_states_dict[i.astype('i1').tostring()] = Game.is_terminal_node(i)
+        for board, hash_value in self._board_hashes.items():
+            win_states_dict[hash_value] = Game.is_terminal_node(np.frombuffer(board, dtype='i1'))
 
         with open(os.path.join(SAVE_PATH, 'win_states.pickle'), 'wb') as file:
             pickle.dump(win_states_dict, file)
 
-        return win_states_dict
+        self._win_states = win_states_dict
+
 
 if __name__ == "__main__":
     g = Game()
