@@ -1,11 +1,7 @@
 import math
-import os
 from typing import Callable
 
 import numpy as np
-from player.Heuristic import Heuristic
-
-NPY_OUTPUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'tests', 'numpy_output')
 
 
 class GameTreeNode:
@@ -58,33 +54,6 @@ class GameTreeNode:
 
     def get_board_num(self):
         return self._board
-
-    def get_size_children(self):
-        return len(self._children)
-
-    @staticmethod
-    def is_terminal_node(state: np.ndarray):
-        """ Check is a state is a win-state for the player """
-
-        def check_equal(lst):
-            lst = list(lst)
-            no_zeroes = True if lst[0] != 0 else False
-            return no_zeroes and lst.count(lst[0]) == len(lst)
-
-        def check_win_state_board(board):
-            # check rows for win state
-            rows = any([check_equal(board[1:4]), check_equal(board[4:7]), check_equal(board[7:10])])
-            # check columns for win state
-            columns = any([check_equal(board[[1, 4, 7]]), check_equal(board[[2, 5, 8]]), check_equal(board[[3, 6, 9]])])
-            # check diagonals for win state
-            diagonals = any([check_equal(board[[1, 5, 9]]), check_equal(board[[3, 5, 7]])])
-            return any([rows, columns, diagonals])
-
-        for s in state:
-            if check_win_state_board(s):
-                return True
-
-        return False
 
     def generate_moves(self, player: int, eval_fn: Callable, depth: int ):
         """ Generates all possible moves for current player by looking at empty squares as potential moves

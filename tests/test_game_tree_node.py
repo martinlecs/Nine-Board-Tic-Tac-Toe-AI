@@ -1,5 +1,6 @@
 import pytest
 import numpy as np
+from player.Game import Game
 from player.GameTreeNode import GameTreeNode
 from player.Heuristic import Heuristic
 
@@ -57,6 +58,13 @@ def heuristic_func():
     return h
 
 
+@pytest.fixture(scope='function')
+def game_cls():
+    g = Game()
+    g.load()
+    return g
+
+
 def test_init_game_tree_node(initial_board_state_node):
     g = initial_board_state_node
     assert np.array_equal(g.board, INITIAL_BOARD[5])
@@ -94,22 +102,19 @@ def test_no_moves_can_be_generated(full_board_state_node, heuristic_func):
 #     assert np.array_equal([i.board for i in g.children], possible_moves)
 
 
-def test_terminal_node_rows(multiple_wins_state_node):
+def test_terminal_node_rows(game_cls, multiple_wins_state_node):
     g = multiple_wins_state_node
-    assert g.is_terminal_node(g.state) is True
+    assert game_cls.is_terminal(g.state) is True
 
 
-def test_terminal_board_true():
+def test_terminal_board_true(game_cls):
     board = np.array([[ 0 , 0 , 1 , 0 , 1 , 1 , -1 , 0 , 1 , -1]])
-    assert GameTreeNode.is_terminal_node(board) is True
+    assert game_cls.is_terminal(board) is True
 
 
-def test_terminal_board_false():
+def test_terminal_board_false(game_cls):
     board = np.array([[ 0 , 0 , 0 , 0 , 1 , 1 , -1 , 0 , 1 , -1]])
-    assert GameTreeNode.is_terminal_node(board) is False
+    assert game_cls.is_terminal(board) is False
 
-
-def test_no_generated_moves_on_terminal_node():
-    board = np.array([0, 0, 1, 0, 1, 1, -1, 0, 1, -1])
 
 
