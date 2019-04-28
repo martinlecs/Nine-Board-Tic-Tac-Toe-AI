@@ -1,26 +1,30 @@
 #!/usr/bin/python3
-# Sample starter bot by Zac Partrdige
+# Adapted from Sample starter bot by Zac Partrdige
 # 06/04/19
-# Feel free to use this and modify it however you wish
 
 import socket
 import sys
+import time
 import numpy as np
 from player.AlphaBeta import AlphaBeta
 from player.Heuristic import Heuristic
 from player.Game import Game
 from player.GameTreeNode import GameTreeNode
-from typing import Callable
 
 
 class Agent:
 
-    def __init__(self, heuristic: Callable, game: Callable):
-        self._heuristic = heuristic
+    def __init__(self, game: Game, heuristic: Heuristic):
         self._game = game
+        self._heuristic = heuristic
         self._boards = np.zeros((10, 10), dtype="int8")
         self._curr = 0
         self._player = 1
+
+    def set_heuristic_params(self, alpha, beta, gamma, delta, win, lose):
+        """ Sets heuristic parameters through the Heuristic class object """
+
+        self._heuristic.set_params(alpha, beta, gamma, delta, win, lose)
 
     def print_board_row(self, board, a, b, c, i, j, k):
         """ Print board row """
@@ -49,7 +53,7 @@ class Agent:
     def play(self):
         """ Choose a move to play """
 
-        n = AlphaBeta(GameTreeNode(self._boards, self._curr), self._game, self._heuristic, 5).run()
+        n = AlphaBeta(GameTreeNode(self._boards, self._curr), self._game, self._heuristic, 3).run()
         self.place(self._curr, n, self._player)
         return n
 
@@ -57,7 +61,7 @@ class Agent:
         """ Place a move in the global boards"""
         self._curr = num
         self._boards[board][num] = player
-        self.print_board(self._boards)
+        # self.print_board(self._boards)
 
     def parse(self, string):
         """ Reads what the server has sent us and only parses the strings that are necessary """
@@ -81,17 +85,17 @@ class Agent:
             self.place(self._curr, int(args[0]), -self._player)
             return self.play()
         elif command == "win":
-            print("Yay!! We win!! :)")
+            # print("Yay!! We win!! :)")
             return -1
         elif command == "loss":
-            print("We lost :(")
-            return -1
+            # print("We lost :(")
+            return -2
         return 0
 
-    def run(self):
+    def run(self, port=None):
         """ Connects to a specified socket and runs the game """
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        port = int(sys.argv[2]) # Usage: ./agent.py -p (port)
+        port = port or int(sys.argv[2])    # Usage: ./agent.py -p (port)
 
         s.connect(('localhost', port))
         while True:
@@ -100,9 +104,9 @@ class Agent:
                 continue
             for line in text.split("\n"):
                 response = self.parse(line)
-                if response == -1:
+                if response == -1 or response == -2:
                     s.close()
-                    return
+                    return response
                 elif response > 0:
                     s.sendall((str(response) + "\n").encode())
 
@@ -112,5 +116,5 @@ if __name__ == "__main__":
     HEURISTIC.load()
     GAME.load()
 
-    a = Agent(HEURISTIC, GAME)
+    a = Agent(GAME, HEURISTIC)
     a.run()

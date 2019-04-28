@@ -2,14 +2,6 @@ import numpy as np
 import itertools
 import pickle
 import os
-from player.Game import Game
-
-ALPHA = 5
-BETA = 1
-GAMMA = 4
-DELTA = 1
-WIN = 1000000
-LOSE = -100000
 
 SAVE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -27,7 +19,17 @@ class Heuristic:
     def __init__(self):
         self._precalc_boards = None
 
+        # Parameters that affect heuristic. These are the default values
+        self._alpha = 5
+        self._beta = 1
+        self._gamma = 4
+        self._delta = 1
+        self._win = 1000000
+        self._lose = -100000
+
     def load(self):
+        """ Loads hashed heuristic files used during search to minimise computation """
+
         if not self._precalc_boards:
             try:
                 # load heuristic_values dict mapping hash values -> heuristic values
@@ -35,6 +37,16 @@ class Heuristic:
                     self._precalc_boards = pickle.load(file)
             except Exception as e:
                 self._precalc_boards = self.__precompute_heuristic_values()
+
+    def set_params(self, alpha, beta, gamma, delta, win, lose):
+        """ Sets parameters for heuristic function """
+
+        self._alpha = alpha
+        self._beta = beta
+        self._gamma = gamma
+        self._delta = delta
+        self._win = win
+        self._lose = lose
 
     @staticmethod
     def __calculate_diagonal(board: np.ndarray):
@@ -293,7 +305,7 @@ class Heuristic:
         opp_two = opponent_vertical_two + opponent_diagonal_two + opponent_horizontal_two
         opp_one = opponent_vertical_one + opponent_diagonal_one + opponent_horizontal_one
 
-        heuristic = WIN * winner + LOSE * loser + ALPHA * my_two + BETA * my_one - GAMMA * opp_two - DELTA * opp_one
+        heuristic = self._win * winner + self._lose * loser + self._alpha * my_two + self._beta * my_one - self._gamma * opp_two - self._delta * opp_one
 
         return heuristic
 
@@ -306,7 +318,8 @@ class Heuristic:
         """
         total_heuristic = 0
         for board in global_board:
-            total_heuristic += self._precalc_boards[board.astype('i1').tostring()]
+            # total_heuristic += self._precalc_boards[board.astype('i1').tostring()]
+            total_heuristic += self.__calculate_board_heuristic(board)
         return total_heuristic / depth
 
     def __precompute_heuristic_values(self):

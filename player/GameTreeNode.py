@@ -1,5 +1,5 @@
 import math
-from typing import Callable
+from player.Heuristic import Heuristic
 
 import numpy as np
 
@@ -55,7 +55,7 @@ class GameTreeNode:
     def get_board_num(self):
         return self._board
 
-    def generate_moves(self, player: int, eval_fn: Callable, depth: int ):
+    def generate_moves(self, player: int, eval_fn: Heuristic, depth: int ):
         """ Generates all possible moves for current player by looking at empty squares as potential moves
             Player 1 = 1, Player 2 = -1
 

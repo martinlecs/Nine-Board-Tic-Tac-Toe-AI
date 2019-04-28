@@ -1,7 +1,7 @@
 import math
 from player.Game import Game
 from player.GameTreeNode import GameTreeNode
-from typing import Callable
+from player.Heuristic import Heuristic
 
 
 class AlphaBeta:
@@ -20,7 +20,7 @@ class AlphaBeta:
 
     """
 
-    def __init__(self, node: GameTreeNode, game: Callable, eval_cls: Callable, depth: int):
+    def __init__(self, node: GameTreeNode, game: Game, eval_cls: Heuristic, depth: int):
         self._node = node
         self._eval_cls = eval_cls
         self._depth = depth
@@ -60,6 +60,7 @@ class AlphaBeta:
         """
 
         if self._game.is_terminal(node.state) or depth == self._depth:
+            depth = 1 if depth == 0 else depth
             return self._eval_cls.compute_heuristic(node.state, depth)
 
         if player == 1:
