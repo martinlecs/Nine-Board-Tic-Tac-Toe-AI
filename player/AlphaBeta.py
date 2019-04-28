@@ -1,4 +1,5 @@
 import math
+from player.Game import Game
 from player.GameTreeNode import GameTreeNode
 from typing import Callable
 
@@ -19,10 +20,11 @@ class AlphaBeta:
 
     """
 
-    def __init__(self, node: GameTreeNode, eval_cls: Callable, depth: int):
+    def __init__(self, node: GameTreeNode, game: Callable, eval_cls: Callable, depth: int):
         self._node = node
         self._eval_cls = eval_cls
         self._depth = depth
+        self._game = game
 
         # Debugging
         self._nodes_generated = 0
@@ -56,13 +58,14 @@ class AlphaBeta:
             alpha (float) :
 
         """
-        if node.is_terminal_node(node.state) or depth == self._depth:
+
+        if self._game.is_terminal(node.state) or depth == self._depth:
             return self._eval_cls.compute_heuristic(node.state, depth)
 
         if player == 1:
 
             node.generate_moves(player, self._eval_cls, depth)
-            self._nodes_generated += len(node.children)
+            # self._nodes_generated += len(node.children)
 
             bestVal = -math.inf
 
@@ -77,7 +80,7 @@ class AlphaBeta:
         else:
 
             node.generate_moves(player, self._eval_cls, depth)
-            self._nodes_generated += len(node.children)
+            # self._nodes_generated += len(node.children)
 
             bestVal = math.inf
 

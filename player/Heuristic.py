@@ -2,7 +2,7 @@ import numpy as np
 import itertools
 import pickle
 import os
-from player.GameTreeNode import GameTreeNode
+from player.Game import Game
 
 ALPHA = 5
 BETA = 1
@@ -306,7 +306,7 @@ class Heuristic:
         """
         total_heuristic = 0
         for board in global_board:
-            total_heuristic += self._precalc_boards[board.tostring()]
+            total_heuristic += self._precalc_boards[board.astype('i1').tostring()]
         return total_heuristic / depth
 
     def __precompute_heuristic_values(self):
@@ -327,17 +327,11 @@ class Heuristic:
 
         # create dict that maps hash values -> heuristic values to save computation time
         heuristic_dict = {}
-        win_states_dict = {}
         for i in np_result:
-            heuristic_dict[i.tostring()] = self.__calculate_board_heuristic(i)
-            win_states_dict[i.tostring()] = GameTreeNode.is_terminal_node(i, board_type='board')
+            heuristic_dict[i.astype('i1').tostring()] = self.__calculate_board_heuristic(i)
 
-        print(win_states_dict)
         with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'wb') as file:
             pickle.dump(heuristic_dict, file)
-
-        with open(os.path.join(SAVE_PATH, 'win_states.pickle'), 'wb') as file:
-            pickle.dump(win_states_dict, file)
 
         return heuristic_dict
 
@@ -357,5 +351,5 @@ if __name__ == "__main__":
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
 
-    # print(h.compute_heuristic(PARTIAL_BOARD, 1))
+    print(h.compute_heuristic(PARTIAL_BOARD, 1))
 
