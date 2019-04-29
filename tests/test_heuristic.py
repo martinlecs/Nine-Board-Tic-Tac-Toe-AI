@@ -46,9 +46,6 @@ def test_heuristic_on_empty_board(heuristic_func, game_cls):
     assert heuristic_func.compute_heuristic(parameterized_board, 1) == 0
 
 
-def test_heuristic_on_partial_board(heuristic_func, game_cls):
-    parameterized_board = [game_cls.board_to_hash(s) for s in PARTIAL_BOARD]
-    assert heuristic_func.compute_heuristic(parameterized_board, 1) == 7
 
 
 

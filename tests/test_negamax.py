@@ -7,9 +7,17 @@ from player.Game import Game
 from player.GameTreeNode import GameTreeNode
 from player.Heuristic import Heuristic
 from player.AlphaBeta import AlphaBeta
+import pickle
 
 INITIAL_BOARD = np.zeros((10, 10), dtype="i1")
 NPY_OUTPUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'tests', 'numpy_output')
+SAVE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
+with open(os.path.join(SAVE_PATH, 'hash_board.pickle'), 'rb') as file:
+    hash_to_board = pickle.load(file)
+
+
 
 FILLED_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          [0, -1, 0, 0, -1, 1, 0, 0, 1, 0],
@@ -21,6 +29,32 @@ FILLED_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                          [0, 1, 0, -1, 1, 0, -1, 0, 0, 0],
                          [0, 0, 0, -1, 0, 0, 1, -1, 0, 1],
                          [0, 0, 0, 0, -1, 0, -1, -1, -1, 1]], dtype='i1')
+
+
+def print_board_row(board, a, b, c, i, j, k):
+    """ Print board row """
+
+    chars = {0: '.', 1: 'O', -1: 'X'}
+
+    print("", chars[board[a][i]], chars[board[a][j]], chars[board[a][k]], end=" | ")
+    print(chars[board[b][i]], chars[board[b][j]], chars[board[b][k]], end=" | ")
+    print(chars[board[c][i]], chars[board[c][j]], chars[board[c][k]])
+
+
+def print_global_board(board):
+    """ Print an entire board """
+    print_board_row(board, 1, 2, 3, 1, 2, 3)
+    print_board_row(board, 1, 2, 3, 4, 5, 6)
+    print_board_row(board, 1, 2, 3, 7, 8, 9)
+    print(" ------+-------+------")
+    print_board_row(board, 4, 5, 6, 1, 2, 3)
+    print_board_row(board, 4, 5, 6, 4, 5, 6)
+    print_board_row(board, 4, 5, 6, 7, 8, 9)
+    print(" ------+-------+------")
+    print_board_row(board, 7, 8, 9, 1, 2, 3)
+    print_board_row(board, 7, 8, 9, 4, 5, 6)
+    print_board_row(board, 7, 8, 9, 7, 8, 9)
+    print()
 
 
 def print_board(board):
@@ -50,16 +84,17 @@ def print_depth_1_nodes(node, best_move, nodes_generated):
     print("Best move = {}\n".format(best_move))
     for c in node.children:
         print("Global state generated from move {} played on board {}\n".format(c.get_board_num(), c.parent))
-        print(c.state)
+        print_global_board(np.array([hash_to_board[i] for i in c.state]))
         print("\nMove performed on board {}:".format(c.parent))
         print("alpha value = {}\n".format(c.alpha))
-        print_board(c.state[c.parent])
+        print_board(hash_to_board[c.state[c.parent]])
 
         if c.children:
             print("Next board: {}".format(c.get_board_num()))
-            print_board(c.board)
+            print_board(hash_to_board[c.board])
         else:
             print("WIN STATE\n\n")
+
 
 
 
@@ -148,12 +183,13 @@ def test_negamax_avoid_loss_in_next_turn_2(game_cls, heuristic_func):
     parameterized_state = np.array([game_cls.board_to_hash(b) for b in state])
 
     start_node = GameTreeNode(parameterized_state, 1)
-    m = AlphaBeta(start_node, game_cls, heuristic_func, 9)
+    m = AlphaBeta(start_node, game_cls, heuristic_func, 3)
     best_move = m.run()
 
-    # print_depth_1_nodes(start_node, best_move, m.nodes_generated)
+    print_depth_1_nodes(start_node, best_move, m.nodes_generated)
 
-    assert best_move != 7
+    assert False
+    # assert best_move != 7
 
 def test_avoid_loss_in_next_turn_3(game_cls, heuristic_func):
     """ Checks to see that negamax avoids allowing the opponent to win in the next turn """
@@ -172,7 +208,7 @@ def test_avoid_loss_in_next_turn_3(game_cls, heuristic_func):
     parameterized_state = np.array([game_cls.board_to_hash(b) for b in state])
 
     start_node = GameTreeNode(parameterized_state, 4)
-    m = AlphaBeta(start_node, game_cls, heuristic_func, 5)
+    m = AlphaBeta(start_node, game_cls, heuristic_func, 3)
     best_move = m.run()
 
     # print_depth_1_nodes(start_node, best_move, m.nodes_generated)
@@ -197,7 +233,7 @@ def test_avoid_losing_in_next_turn_4(game_cls, heuristic_func):
     parameterized_state = np.array([game_cls.board_to_hash(b) for b in state])
 
     start_node = GameTreeNode(parameterized_state, 4)
-    m = AlphaBeta(start_node, game_cls, heuristic_func, 5)
+    m = AlphaBeta(start_node, game_cls, heuristic_func, 3)
     best_move = m.run()
 
     # print_depth_1_nodes(start_node, best_move, m.nodes_generated)
@@ -220,7 +256,7 @@ def test_generate_best_move_opponent_depth_2(game_cls, heuristic_func):
     parameterized_state = np.array([game_cls.board_to_hash(b) for b in state])
 
     start_node = GameTreeNode(parameterized_state, 4)
-    m = AlphaBeta(start_node, game_cls, heuristic_func, 5)
+    m = AlphaBeta(start_node, game_cls, heuristic_func, 3)
     best_move = m.run()
 
     # print_depth_1_nodes(start_node, best_move, m.nodes_generated)
@@ -243,7 +279,7 @@ def test_avoid_loss_in_next_move_5(game_cls, heuristic_func):
     parameterized_state = np.array([game_cls.board_to_hash(b) for b in state])
 
     start_node = GameTreeNode(parameterized_state, 3)
-    m = AlphaBeta(start_node, game_cls, heuristic_func, 5)
+    m = AlphaBeta(start_node, game_cls, heuristic_func, 3)
     best_move = m.run()
 
     # print_depth_1_nodes(start_node, best_move, m.nodes_generated)

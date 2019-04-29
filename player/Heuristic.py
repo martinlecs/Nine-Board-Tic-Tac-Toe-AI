@@ -2,7 +2,6 @@ import numpy as np
 import itertools
 import pickle
 import os
-import hashlib
 
 SAVE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -28,6 +27,9 @@ class Heuristic:
         self._win = 1000000
         self._lose = -100000
 
+        # debugging
+        self._hash_board = None
+
     def load(self):
         """ Loads hashed heuristic files used during search to minimise computation """
 
@@ -36,6 +38,8 @@ class Heuristic:
                 # load heuristic_values dict mapping hash values -> heuristic values
                 with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'rb') as file:
                     self._precalc_boards = pickle.load(file)
+                with open(os.path.join(SAVE_PATH, 'hash_board.pickle'), 'rb') as file:
+                    self._hash_board = pickle.load(file)
             except Exception as e:
                 self.__precompute_heuristic_values()
 
@@ -320,8 +324,13 @@ class Heuristic:
             heuristic (int): Heuristic value of the global board
 
         """
+        total = 0
+        for b in global_board:
+            board = self._hash_board[b]
+            total += self.__calculate_board_heuristic(board)
 
-        return sum([self._precalc_boards[b] for b in global_board]) / depth
+        return total
+        # return sum([self._precalc_boards[b] for b in global_board]) / depth
 
     def __precompute_heuristic_values(self):
 
@@ -331,15 +340,21 @@ class Heuristic:
         result = itertools.product(possible_values, repeat=num_to_select)  # creates a generator
 
         heuristic_dict = {}
+        hash_board = {}
         for counter, i in enumerate(result):
             i = list(i)
             i.insert(0, 0)  # add leading zero to match formatting of np.array in agent.py
             if i.count(1) < 5 or i.count(-1) < 5:
                 heuristic_dict[counter] = self.__calculate_board_heuristic(np.array(i, dtype='i1'))
+                hash_board[counter] = np.array(i, dtype='i1')
 
         with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'wb') as file:
             pickle.dump(heuristic_dict, file)
 
+        with open(os.path.join(SAVE_PATH, 'hash_board.pickle'), 'wb') as file:
+            pickle.dump(hash_board, file)
+
         self._precalc_boards = heuristic_dict
+        self._hash_board = hash_board
 
 

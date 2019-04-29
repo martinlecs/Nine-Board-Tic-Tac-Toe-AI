@@ -40,9 +40,11 @@ class Game:
             self._hash_to_board = {v: k for k, v in self._board_hashes.items()}
 
     def board_to_hash(self, board: np.ndarray):
-        """ Returns the corresponding hash value for a board """
+        """ Returns the corresponding hash value for a board
+            board (numpy array): i1
+        """
 
-        return self._board_hashes[np.array(board).tostring()]
+        return self._board_hashes[board.tostring()]
 
     def is_terminal(self, state: np.ndarray):
         """ Checks if there is a terminal node in a given global game state """
@@ -113,12 +115,10 @@ class Game:
 
         """
 
-        # create local copies of global board and current board in play
+        # create local copy current board in play
         board = np.frombuffer(self._hash_to_board[state[curr_board]], dtype='i1')   # read-only
         modifiable_board = np.empty_like(board)
         modifiable_board[:] = board
-        updated_state = np.empty_like(state)
-        updated_state[:] = state
 
         move_list = []
         for i in range(1, 10):
@@ -128,21 +128,25 @@ class Game:
                 modifiable_board[i] = player
 
                 # create a copy of global state and pass that down to the child
-                previous_board = updated_state[curr_board]
-                updated_state[curr_board] = self.board_to_hash(board)
+                updated_state = np.empty_like(state)
+                updated_state[:] = state
+                updated_state[curr_board] = self.board_to_hash(modifiable_board)
 
-                # append child to parent
-                move_list.append(GameTreeNode(updated_state, i, player))
+                # calculate child's heuristic value and append child to parent
+                g = GameTreeNode(updated_state, i, player)
+                depth = 1 if depth == 0 else depth
+                g.heuristic_val = eval_fn.compute_heuristic(updated_state, depth)
+                move_list.append(g)
 
                 # reset board
                 modifiable_board[i] = 0
-                updated_state[curr_board] = previous_board
 
         # order children
-        depth = 1 if depth == 0 else depth
-        move_list.sort(key=lambda x: eval_fn.compute_heuristic(x.state, depth), reverse=True)
+        reversed = True if player == 1 else False
+        move_list.sort(key=lambda x: x.heuristic_val, reverse=reversed)
 
         return move_list
+
 
 if __name__ == "__main__":
     g = Game()

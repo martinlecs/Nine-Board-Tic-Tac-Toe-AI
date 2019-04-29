@@ -16,6 +16,7 @@ class GameTreeNode:
         self._state = state
         self._board = board
         self._children = None
+        self._heuristic_val = -math.inf
 
         # For debugging purposes
         self._alpha = -math.inf
@@ -53,6 +54,14 @@ class GameTreeNode:
     @property
     def parent(self):
         return self._parent
+
+    @property
+    def heuristic_val(self):
+        return self._heuristic_val
+
+    @heuristic_val.setter
+    def heuristic_val(self, val):
+        self._heuristic_val = val
 
     def get_board_num(self):
         return self._board

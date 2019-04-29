@@ -18,7 +18,6 @@ class Agent:
         self._game = game
         self._heuristic = heuristic
         self._boards = np.zeros(shape=(10, 10), dtype='i1')
-        self._boards_internal = np.zeros(10)    # replace with empty board hashes
         self._curr = 0
         self._player = 1
 
@@ -54,8 +53,9 @@ class Agent:
     def play(self):
         """ Choose a move to play """
 
-        state = GameTreeNode(self._boards_internal, self._curr)
-        n = AlphaBeta(state, self._game, self._heuristic, 7).run()
+        parameterized_state = np.array([self._game.board_to_hash(b) for b in self._boards])
+        node = GameTreeNode(parameterized_state, self._curr)
+        n = AlphaBeta(node, self._game, self._heuristic, 3).run()
         self.place(self._curr, n, self._player)
         return n
 
@@ -63,7 +63,6 @@ class Agent:
         """ Place a move in the global boards"""
         self._curr = num
         self._boards[board][num] = player
-        self._boards_internal[board] = self._game.board_to_hash(self._boards[board])
         # self.print_board(self._boards)
 
     def parse(self, string):
