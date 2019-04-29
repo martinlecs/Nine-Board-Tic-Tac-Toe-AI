@@ -30,8 +30,8 @@ class Tuning:
     def tune_parameters_bruteforce(self):
         """ Perform a grid search that finds the best possible parameter values for the Heuristic function """
 
-        param_grid = {'alpha': [1, 5, 10], 'beta': [1, 5, 10], 'gamma': [1, 5, 10],
-                      'delta': [1, 5, 10], 'win': [10, 100], 'lose': [-10, -100]}
+        param_grid = {'alpha': [45], 'beta': [10], 'gamma': [90],
+                      'delta': [10], 'win': [1000], 'lose': [-1000]}
 
         grid = ParameterGrid(param_grid)
 
@@ -51,7 +51,7 @@ class Tuning:
 
                 # run a game instance. We go second.
                 subprocess.Popen(['../src/servt', '-p', str(port)])
-                subprocess.Popen(['../src/lookt.mac', '-p', str(port)])
+                subprocess.Popen(['../src/lookt.mac', '-p', str(port), '-d', '18'])
                 result = agent.run(port=port)
 
                 # set Heuristic to calculate per call instead of using hash

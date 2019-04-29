@@ -55,7 +55,7 @@ class Agent:
 
         parameterized_state = np.array([self._game.board_to_hash(b) for b in self._boards])
         node = GameTreeNode(parameterized_state, self._curr)
-        n = AlphaBeta(node, self._game, self._heuristic, 3).run()
+        n = AlphaBeta(node, self._game, self._heuristic, 7).run()
         self.place(self._curr, n, self._player)
         return n
 

@@ -20,10 +20,10 @@ class Heuristic:
         self._precalc_boards = None
 
         # Parameters that affect heuristic. These are the default values
-        self._alpha = 5
-        self._beta = 1
-        self._gamma = 4
-        self._delta = 1
+        self._alpha = 45
+        self._beta = 10
+        self._gamma = 90
+        self._delta = 10
         self._win = 1000000
         self._lose = -100000
 
@@ -38,8 +38,8 @@ class Heuristic:
                 # load heuristic_values dict mapping hash values -> heuristic values
                 with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'rb') as file:
                     self._precalc_boards = pickle.load(file)
-                with open(os.path.join(SAVE_PATH, 'hash_board.pickle'), 'rb') as file:
-                    self._hash_board = pickle.load(file)
+                # with open(os.path.join(SAVE_PATH, 'hash_board.pickle'), 'rb') as file:
+                #     self._hash_board = pickle.load(file)
             except Exception as e:
                 self.__precompute_heuristic_values()
 
@@ -324,13 +324,13 @@ class Heuristic:
             heuristic (int): Heuristic value of the global board
 
         """
-        total = 0
-        for b in global_board:
-            board = self._hash_board[b]
-            total += self.__calculate_board_heuristic(board)
-
-        return total
-        # return sum([self._precalc_boards[b] for b in global_board]) / depth
+        # total = 0
+        # for b in global_board:
+        #     board = self._hash_board[b]
+        #     total += self.__calculate_board_heuristic(board)
+        #
+        # return total
+        return sum([self._precalc_boards[b] for b in global_board]) / depth
 
     def __precompute_heuristic_values(self):
 
@@ -351,10 +351,10 @@ class Heuristic:
         with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'wb') as file:
             pickle.dump(heuristic_dict, file)
 
-        with open(os.path.join(SAVE_PATH, 'hash_board.pickle'), 'wb') as file:
-            pickle.dump(hash_board, file)
+        # with open(os.path.join(SAVE_PATH, 'hash_board.pickle'), 'wb') as file:
+        #     pickle.dump(hash_board, file)
 
         self._precalc_boards = heuristic_dict
-        self._hash_board = hash_board
+        # self._hash_board = hash_board
 
 
