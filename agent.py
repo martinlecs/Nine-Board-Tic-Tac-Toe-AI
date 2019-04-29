@@ -52,7 +52,6 @@ class Agent:
 
     def play(self):
         """ Choose a move to play """
-
         parameterized_state = np.array([self._game.board_to_hash(b) for b in self._boards])
         node = GameTreeNode(parameterized_state, self._curr)
         n = AlphaBeta(node, self._game, self._heuristic, 7).run()
@@ -64,6 +63,12 @@ class Agent:
         self._curr = num
         self._boards[board][num] = player
         # self.print_board(self._boards)
+
+    def reset_boards(self):
+        """ Used when playing multiple games in a row to reset the board """
+        self._boards = np.zeros(shape=(10, 10), dtype='i1')
+        self._curr = 0
+        gc.collect()
 
     def parse(self, string):
         """ Reads what the server has sent us and only parses the strings that are necessary """
@@ -87,10 +92,8 @@ class Agent:
             self.place(self._curr, int(args[0]), -self._player)
             return self.play()
         elif command == "win":
-            # print("Yay!! We win!! :)")
             return -1
         elif command == "loss":
-            # print("We lost :(")
             return -2
         elif command == "end":
             return 0
