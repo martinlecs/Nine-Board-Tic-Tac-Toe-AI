@@ -2,6 +2,7 @@ import numpy as np
 import itertools
 import pickle
 import os
+import hashlib
 
 SAVE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -36,7 +37,7 @@ class Heuristic:
                 with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'rb') as file:
                     self._precalc_boards = pickle.load(file)
             except Exception as e:
-                self._precalc_boards = self.__precompute_heuristic_values()
+                self.__precompute_heuristic_values()
 
     def set_params(self, alpha, beta, gamma, delta, win, lose):
         """ Sets parameters for heuristic function """
@@ -174,47 +175,47 @@ class Heuristic:
 
         for x in range(1, 4):
             if board[x] == 1 and board[x + 3] == 0 and board[x + 6] == 0:
-                #print ("in vertical if 1 with column %d" %(x))
+                # print ("in vertical if 1 with column %d" %(x))
                 vertical_one += 1
             elif board[x] == 0 and board[x + 3] == 1 and board[x + 6] == 0:
-                #print("in vertical if 2 with column %d" % (x))
+                # print("in vertical if 2 with column %d" % (x))
                 vertical_one += 1
             elif board[x] == 0 and board[x + 3] == 0 and board[x + 6] == 1:
-                #print("in vertical if 3 with column %d" % (x))
+                # print("in vertical if 3 with column %d" % (x))
                 vertical_one += 1
             elif board[x] == 1 and board[x + 3] == 1 and board[x + 6] == 0:
-                #print("in vertical if 4 with column %d" % (x))
+                # print("in vertical if 4 with column %d" % (x))
                 vertical_two += 1
             elif board[x] == 0 and board[x + 3] == 1 and board[x + 6] == 1:
-                #print("in vertical if 5 with column %d" % (x))
+                # print("in vertical if 5 with column %d" % (x))
                 vertical_two += 1
             elif board[x] == 1 and board[x + 3] == 0 and board[x + 6] == 1:
-                #print("in vertical if 6 with column %d" % (x))
+                # print("in vertical if 6 with column %d" % (x))
                 vertical_two += 1
             elif board[x] == 1 and board[x + 3] == 1 and board[x + 6] == 1:
-                #print("in vertical if 7 with column %d" % (x))
+                # print("in vertical if 7 with column %d" % (x))
                 winner += 1
 
             if board[x] == -1 and board[x + 3] == 0 and board[x + 6] == 0:
-                #print("in vertical if 8 with column %d" % (x))
+                # print("in vertical if 8 with column %d" % (x))
                 opponent_vertical_one += 1
             elif board[x] == 0 and board[x + 3] == -1 and board[x + 6] == 0:
-                #print("in vertical if 9 with column %d" % (x))
+                # print("in vertical if 9 with column %d" % (x))
                 opponent_vertical_one += 1
             elif board[x] == 0 and board[x + 3] == 0 and board[x + 6] == -1:
-                #print("in vertical if 10 with column %d" % (x))
+                # print("in vertical if 10 with column %d" % (x))
                 opponent_vertical_one += 1
             elif board[x] == -1 and board[x + 3] == -1 and board[x + 6] == 0:
-                #print("in vertical if 11 with column %d" % (x))
+                # print("in vertical if 11 with column %d" % (x))
                 opponent_vertical_two += 1
             elif board[x] == 0 and board[x + 3] == -1 and board[x + 6] == -1:
-                #print("in vertical if 12 with column %d" % (x))
+                # print("in vertical if 12 with column %d" % (x))
                 opponent_vertical_two += 1
             elif board[x] == -1 and board[x + 3] == 0 and board[x + 6] == -1:
-                #print("in vertical if 13 with column %d" % (x))
+                # print("in vertical if 13 with column %d" % (x))
                 opponent_vertical_two += 1
             elif board[x] == -1 and board[x + 3] == -1 and board[x + 6] == -1:
-                #print("in vertical if 14 with column %d" % (x))
+                # print("in vertical if 14 with column %d" % (x))
                 loser += 1
 
         return vertical_one, vertical_two, opponent_vertical_one, opponent_vertical_two, winner, loser
@@ -239,47 +240,47 @@ class Heuristic:
         digits = [1, 4, 7]
         for x in digits:
             if board[x] == 1 and board[x + 1] == 0 and board[x + 2] == 0:
-                #print("in horizontal if 1 with row %d" % (x))
+                # print("in horizontal if 1 with row %d" % (x))
                 horizontal_one += 1
             elif board[x] == 0 and board[x + 1] == 1 and board[x + 2] == 0:
-                #print("in horizontal if 2 with row %d" % (x))
+                # print("in horizontal if 2 with row %d" % (x))
                 horizontal_one += 1
             elif board[x] == 0 and board[x + 1] == 0 and board[x + 2] == 1:
-                #print("in horizontal if 3 with row %d" % (x))
+                # print("in horizontal if 3 with row %d" % (x))
                 horizontal_one += 1
             elif board[x] == 1 and board[x + 1] == 1 and board[x + 2] == 0:
-                #print("in horizontal if 4 with row %d" % (x))
+                # print("in horizontal if 4 with row %d" % (x))
                 horizontal_two += 1
             elif board[x] == 0 and board[x + 1] == 1 and board[x + 2] == 1:
-                #print("in horizontal if 5 with row %d" % (x))
+                # print("in horizontal if 5 with row %d" % (x))
                 horizontal_two += 1
             elif board[x] == 1 and board[x + 1] == 0 and board[x + 2] == 1:
-                #print("in horizontal if 6 with row %d" % (x))
+                # print("in horizontal if 6 with row %d" % (x))
                 horizontal_two += 1
             elif board[x] == 1 and board[x + 1] == 1 and board[x + 2] == 1:
-                #print("in horizontal if 7 with row %d" % (x))
+                # print("in horizontal if 7 with row %d" % (x))
                 winner += 1
 
             if board[x] == -1 and board[x + 1] == 0 and board[x + 2] == 0:
-                #print("in horizontal if 8 with row %d" % (x))
+                # print("in horizontal if 8 with row %d" % (x))
                 opponent_horizontal_one += 1
             elif board[x] == 0 and board[x + 1] == -1 and board[x + 2] == 0:
-                #print("in horizontal if 9 with row %d" % (x))
+                # print("in horizontal if 9 with row %d" % (x))
                 opponent_horizontal_one += 1
             elif board[x] == 0 and board[x + 1] == 0 and board[x + 2] == -1:
-                #print("in horizontal if 10 with row %d" % (x))
+                # print("in horizontal if 10 with row %d" % (x))
                 opponent_horizontal_one += 1
             elif board[x] == -1 and board[x + 1] == -1 and board[x + 2] == 0:
-                #print("in horizontal if 11 with row %d" % (x))
+                # print("in horizontal if 11 with row %d" % (x))
                 opponent_horizontal_two += 1
             elif board[x] == 0 and board[x + 1] == -1 and board[x + 2] == -1:
-                #print("in horizontal if 12 with row %d" % (x))
+                # print("in horizontal if 12 with row %d" % (x))
                 opponent_horizontal_two += 1
             elif board[x] == -1 and board[x + 1] == 0 and board[x + 2] == -1:
-                #print("in horizontal if 13 with row %d" % (x))
+                # print("in horizontal if 13 with row %d" % (x))
                 opponent_horizontal_two += 1
             elif board[x] == -1 and board[x + 1] == -1 and board[x + 2] == -1:
-                #print("in horizontal if 14 with row %d" % (x))
+                # print("in horizontal if 14 with row %d" % (x))
                 loser += 1
 
         return horizontal_one, horizontal_two, opponent_horizontal_one, opponent_horizontal_two, winner, loser
@@ -294,14 +295,17 @@ class Heuristic:
             heuristic (int): Heuristic value of the board
 
         """
-        diagonal_one, diagonal_two, opponent_diagonal_one, opponent_diagonal_two, winner_d, loser_d = self.__calculate_diagonal(board)
-        vertical_one, vertical_two, opponent_vertical_one, opponent_vertical_two, winner_v, loser_v = self.__calculate_vertical(board)
-        horizontal_one, horizontal_two, opponent_horizontal_one, opponent_horizontal_two, winner_h, loser_h = self.__calculate_horizontal(board)
+        diagonal_one, diagonal_two, opponent_diagonal_one, opponent_diagonal_two, winner_d, loser_d = self.__calculate_diagonal(
+            board)
+        vertical_one, vertical_two, opponent_vertical_one, opponent_vertical_two, winner_v, loser_v = self.__calculate_vertical(
+            board)
+        horizontal_one, horizontal_two, opponent_horizontal_one, opponent_horizontal_two, winner_h, loser_h = self.__calculate_horizontal(
+            board)
 
         winner = winner_d + winner_v + winner_h
         loser = loser_d + loser_v + loser_h
         my_two = vertical_two + diagonal_two + horizontal_two
-        my_one = vertical_one  + diagonal_one + horizontal_one
+        my_one = vertical_one + diagonal_one + horizontal_one
         opp_two = opponent_vertical_two + opponent_diagonal_two + opponent_horizontal_two
         opp_one = opponent_vertical_one + opponent_diagonal_one + opponent_horizontal_one
 
@@ -316,62 +320,26 @@ class Heuristic:
             heuristic (int): Heuristic value of the global board
 
         """
-        return sum([self._precalc_boards[b.tostring()] for b in global_board]) / depth
 
-        # marginally faster than above
-        # return sum([
-        #     self._precalc_boards[global_board[1].tostring()],
-        #     self._precalc_boards[global_board[2].tostring()],
-        #     self._precalc_boards[global_board[3].tostring()],
-        #     self._precalc_boards[global_board[4].tostring()],
-        #     self._precalc_boards[global_board[5].tostring()],
-        #     self._precalc_boards[global_board[6].tostring()],
-        #     self._precalc_boards[global_board[7].tostring()],
-        #     self._precalc_boards[global_board[8].tostring()],
-        #     self._precalc_boards[global_board[9].tostring()],
-        # ]) / depth
+        return sum([self._precalc_boards[b] for b in global_board]) / depth
 
     def __precompute_heuristic_values(self):
 
         # generate all possible states
-        num_to_select = 9   # number of squares in tic-tac-toe board
+        num_to_select = 9  # number of squares in tic-tac-toe board
         possible_values = [0, 1, -1]
-        result = list(itertools.product(possible_values, repeat=num_to_select))
+        result = itertools.product(possible_values, repeat=num_to_select)  # creates a generator
 
-        # add extra empty element to head of list
-        modified_result = []
-        for i in result:
-            n = list(i)
-            n.insert(0, 0)
-            modified_result.append(n)
-
-        np_result = np.array(modified_result)
-
-        # create dict that maps hash values -> heuristic values to save computation time
         heuristic_dict = {}
-        for i in np_result:
-            heuristic_dict[i.astype('i1').tostring()] = self.__calculate_board_heuristic(i)
+        for counter, i in enumerate(result):
+            i = list(i)
+            i.insert(0, 0)  # add leading zero to match formatting of np.array in agent.py
+            if i.count(1) < 5 or i.count(-1) < 5:
+                heuristic_dict[counter] = self.__calculate_board_heuristic(np.array(i, dtype='i1'))
 
-        # with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'wb') as file:
-        #     pickle.dump(heuristic_dict, file)
+        with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'wb') as file:
+            pickle.dump(heuristic_dict, file)
 
-        return heuristic_dict
+        self._precalc_boards = heuristic_dict
 
-
-if __name__ == "__main__":
-    h = Heuristic()
-    h.load()
-
-    PARTIAL_BOARD = np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                              [0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
-                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
-
-    print(h.compute_heuristic(PARTIAL_BOARD, 1))
 

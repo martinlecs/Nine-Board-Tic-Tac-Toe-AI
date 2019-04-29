@@ -65,30 +65,29 @@ class AlphaBeta:
 
         if player == 1:
 
-            node.generate_moves(player, self._eval_cls, depth)
+            node.children = self._game.generate_moves(node.state, node.get_board_num(), player, self._eval_cls, depth)
             # self._nodes_generated += len(node.children)
 
-            bestVal = -math.inf
+            best_val = -math.inf
 
             for child in node.children:
                 child.alpha = self.__alpha_beta(child, depth + 1, alpha, beta, -player)
-                bestVal = max(bestVal, child.alpha)
-                alpha = max(alpha, bestVal)
+                best_val = max(best_val, child.alpha)
+                alpha = max(alpha, best_val)
                 if beta <= alpha:
-                    return bestVal
-            return bestVal
+                    return best_val
+            return best_val
 
         else:
 
-            node.generate_moves(player, self._eval_cls, depth)
+            node.children = self._game.generate_moves(node.state, node.get_board_num(), player, self._eval_cls, depth)
             # self._nodes_generated += len(node.children)
 
-            bestVal = math.inf
+            best_val = math.inf
 
             for child in node.children:
-                bestVal = min(bestVal, self.__alpha_beta(child, depth + 1, alpha, beta, -player))
-                beta = min(beta, bestVal)
-                child.beta = bestVal
+                best_val = min(best_val, self.__alpha_beta(child, depth + 1, alpha, beta, -player))
+                beta = min(beta, best_val)
                 if beta <= alpha:
-                    return bestVal
-            return bestVal
+                    return best_val
+            return best_val

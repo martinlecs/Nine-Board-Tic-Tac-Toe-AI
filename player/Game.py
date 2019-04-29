@@ -2,6 +2,8 @@ import itertools
 import os
 import pickle
 import numpy as np
+from player.Heuristic import Heuristic
+from player.GameTreeNode import GameTreeNode
 
 SAVE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -16,6 +18,7 @@ class Game:
     def __init__(self):
         self._win_states = None
         self._board_hashes = None
+        self._hash_to_board = None
 
     def load(self):
         """ Loads necessary precomputed values into class for easy access """
@@ -34,15 +37,16 @@ class Game:
                 self.__precompute_board_hash()
                 self.__precompute_win_states()
 
-    def board_hash_value(self, board: np.ndarray):
+            self._hash_to_board = {v: k for k, v in self._board_hashes.items()}
+
+    def board_to_hash(self, board: np.ndarray):
         """ Returns the corresponding hash value for a board """
 
-        return self._board_hashes[np.array(board).astype('i1').tostring()]
+        return self._board_hashes[np.array(board).tostring()]
 
     def is_terminal(self, state: np.ndarray):
         """ Checks if there is a terminal node in a given global game state """
-
-        return any([self._win_states[self._board_hashes[s.tostring()]] for s in state])
+        return any([self._win_states[s] for s in state])
 
     @staticmethod
     def is_terminal_node(board: np.ndarray):
@@ -74,15 +78,17 @@ class Game:
         result = itertools.product(possible_values, repeat=num_to_select)  # creates a generator
 
         board_hash = {}
-        for i in result:
+        for counter, i in enumerate(result):
             i = list(i)
             i.insert(0, 0)  # add leading zero to match formatting of np.array in agent.py
-            board_hash[np.array(i, dtype='i1').tostring()] = hash(np.array(i).astype('i1').tostring())
+            if i.count(1) < 5 or i.count(-1) < 5:
+                board_hash[np.array(i, dtype='i1').tostring()] = counter
 
         with open(os.path.join(SAVE_PATH, 'board_hashes.pickle'), 'wb') as file:
             pickle.dump(board_hash, file)
 
         self._board_hashes = board_hash
+
 
     def __precompute_win_states(self):
         """ Precomputes all possible win states and stores them into a hash for faster computation. """
@@ -101,7 +107,48 @@ class Game:
 
         self._win_states = win_states_dict
 
+    def generate_moves(self, state: np.ndarray, curr_board: int, player: int, eval_fn: Heuristic, depth: int ):
+        """ Generates all possible moves for current player by looking at empty squares as potential moves
+            Player 1 = 1, Player 2 = -1
+
+        """
+
+        # create local copies of global board and current board in play
+        board = np.frombuffer(self._hash_to_board[state[curr_board]], dtype='i1')   # read-only
+        modifiable_board = np.empty_like(board)
+        modifiable_board[:] = board
+        updated_state = np.empty_like(state)
+        updated_state[:] = state
+
+        move_list = []
+        for i in range(1, 10):
+            if modifiable_board[i] == 0:
+
+                # set board
+                modifiable_board[i] = player
+
+                # create a copy of global state and pass that down to the child
+                previous_board = updated_state[curr_board]
+                updated_state[curr_board] = self.board_to_hash(board)
+
+                # append child to parent
+                move_list.append(GameTreeNode(updated_state, i, player))
+
+                # reset board
+                modifiable_board[i] = 0
+                updated_state[curr_board] = previous_board
+
+        # order children
+        depth = 1 if depth == 0 else depth
+        move_list.sort(key=lambda x: eval_fn.compute_heuristic(x.state, depth), reverse=True)
+
+        return move_list
 
 if __name__ == "__main__":
     g = Game()
     g.load()
+
+    h = Heuristic()
+    h.load()
+
+    g.generate_moves(np.array([0, 137, 6561, 1467, 0, 4376, 6561, 14661, 18, 738]), 3, 1, h, 8)

@@ -85,7 +85,7 @@ def test_init_game_tree_node(initial_board_state_node):
 #     assert np.array_equal([i.board for i in g.children], result) and np.array_equal(g.board, INITIAL_BOARD[5])
 
 
-def test_no_moves_can_be_generated(full_board_state_node, heuristic_func):
+def test_no_moves_can_be_generated(full_board_state_node, heuristic_func, game_cls):
     g = full_board_state_node
     g.generate_moves(CURRENT_PLAYER, heuristic_func, 1)
     assert len(g.children) == 0

@@ -21,5 +21,6 @@ def test_not_win_state(game_cls):
                             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype='i1')
 
-    assert game_cls.is_terminal(ALMOST_BOARD) is False
+    parameterized_board = [game_cls.board_to_hash(b) for b in ALMOST_BOARD]
+    assert game_cls.is_terminal(parameterized_board) is False
 

@@ -1,6 +1,4 @@
 import math
-from player.Heuristic import Heuristic
-
 import numpy as np
 
 
@@ -36,6 +34,10 @@ class GameTreeNode:
     def children(self):
         return self._children
 
+    @children.setter
+    def children(self, lst):
+        self._children = lst
+
     @property
     def move(self):
         return self._board
@@ -54,28 +56,5 @@ class GameTreeNode:
 
     def get_board_num(self):
         return self._board
-
-    def generate_moves(self, player: int, eval_fn: Heuristic, depth: int ):
-        """ Generates all possible moves for current player by looking at empty squares as potential moves
-            Player 1 = 1, Player 2 = -1
-
-        """
-
-        def create_new_successor_node(state, move, player):
-            state_copy = np.array(state)
-            state_copy[self._board][move] = player
-            return GameTreeNode(state_copy, move, parent=self._board)
-
-        board = self.board
-        move_list = []
-        for i in range(1, 10):
-            if board[i] == 0:
-                move_list.append(create_new_successor_node(self._state, i, player))
-
-        # order children
-        depth = 1 if depth == 0 else depth
-        move_list.sort(key=lambda x: eval_fn.compute_heuristic(x.state, depth), reverse=True)
-
-        self._children = move_list
 
 
