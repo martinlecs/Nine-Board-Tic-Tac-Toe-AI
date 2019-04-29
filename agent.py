@@ -92,7 +92,9 @@ class Agent:
         elif command == "loss":
             # print("We lost :(")
             return -2
-        return 0
+        elif command == "end":
+            return 0
+        return 1
 
     def run(self, port=None):
         """ Connects to a specified socket and runs the game """
@@ -106,7 +108,7 @@ class Agent:
                 continue
             for line in text.split("\n"):
                 response = self.parse(line)
-                if response == -1 or response == -2:
+                if response == 0:
                     s.close()
                     return response
                 elif response > 0:
