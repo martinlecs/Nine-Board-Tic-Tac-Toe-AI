@@ -30,8 +30,8 @@ class Tuning:
     def tune_parameters_bruteforce(self):
         """ Perform a grid search that finds the best possible parameter values for the Heuristic function """
 
-        param_grid = {'alpha': [45], 'beta': [10], 'gamma': [90],
-                      'delta': [10], 'win': [1000], 'lose': [-1000]}
+        param_grid = {'alpha': [45, 60], 'beta': [10, 20], 'gamma': [90],
+                      'delta': [10, 20], 'win': [1000], 'lose': [-1000]}
 
         grid = ParameterGrid(param_grid)
 
@@ -40,8 +40,6 @@ class Tuning:
 
         for params in grid:
 
-            results = []
-            # run 10 times and get average result
             for i in range(10):
                 agent = Agent(self._game, self._heuristic)
                 agent.set_heuristic_params(params['alpha'], params['beta'], params['gamma'], params['delta'],
@@ -51,15 +49,11 @@ class Tuning:
 
                 # run a game instance. We go second.
                 subprocess.Popen(['../src/servt', '-p', str(port)])
-                subprocess.Popen(['../src/lookt.mac', '-p', str(port), '-d', '18'])
+                subprocess.Popen(['../src/lookt.mac', '-p', str(port)])
                 result = agent.run(port=port)
 
-                # set Heuristic to calculate per call instead of using hash
-                results.append(result)
-
-            average_result = mean(results)
-            df.loc[len(df)] = [params['alpha'], params['beta'], params['gamma'], params['delta'], params['win'],
-                               params['lose'], average_result]
+                df.loc[len(df)] = [params['alpha'], params['beta'], params['gamma'], params['delta'], params['win'],
+                                   params['lose'], result]
             gc.collect()
 
         df.to_csv(os.path.join(SAVE_PATH, 'parameters.csv'))
