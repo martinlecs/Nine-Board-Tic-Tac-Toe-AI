@@ -38,8 +38,7 @@ class Heuristic:
                 # load heuristic_values dict mapping hash values -> heuristic values
                 with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'rb') as file:
                     self._precalc_boards = pickle.load(file)
-                # with open(os.path.join(SAVE_PATH, 'hash_board.pickle'), 'rb') as file:
-                #     self._hash_board = pickle.load(file)
+
             except FileNotFoundError as e:
                 self.__precompute_heuristic_values()
 
@@ -54,7 +53,7 @@ class Heuristic:
         self._lose = lose
 
     @staticmethod
-    def __calculate_diagonal(board: np.ndarray):
+    def calculate_diagonal(board: np.ndarray):
         """ Calculates the heuristic value for each diagonal in a Tic-Tac-Toe board.
 
 
@@ -67,97 +66,23 @@ class Heuristic:
             (int, int, int, int, int, int): Tuple contains the heuristic values calculated for a Tic-Tac-Toe board's diagonals.
 
         """
+        possible_states_player = np.array([np.array(i) for i in itertools.product([0, 1], repeat=3)])
+        possible_states_opponent = np.negative(possible_states_player)
 
-        # TODO: replace this ugly variable initialisation with a dict
-        diagonal_one = diagonal_two = opponent_diagonal_one = opponent_diagonal_two = winner = loser = 0
+        diagonal_one = 1 if any(np.array_equal(board[[1, 5, 9]], x) for x in possible_states_player[[1, 2, 4]]) else 0
+        diagonal_one += 1 if any(np.array_equal(board[[3, 5, 7]], x) for x in possible_states_player[[1, 2, 4]]) else 0
+        diagonal_two = 1 if any(np.array_equal(board[[1, 5, 9]], x) for x in possible_states_player[[3, 5, 6]]) else 0
+        diagonal_two += 1 if any(np.array_equal(board[[3, 5, 7]], x) for x in possible_states_player[[3, 5, 6]]) else 0
+        winner = 1 if np.array_equal(board[[1, 5, 9]], possible_states_player[7]) else 0
+        winner += 1 if np.array_equal(board[[3, 5, 7]], possible_states_player[7]) else 0
 
-        if board[1] == 1 and board[5] == 0 and board[9] == 0:
-            ##print ("In diagonal if1")
-            diagonal_one += 1
-        elif board[1] == 0 and board[5] == 1 and board[9] == 0:
-            ##print ("In diagonal if2")
-            diagonal_one += 1
-        elif board[1] == 0 and board[5] == 0 and board[9] == 1:
-            ##print ("In diagonal if3")
-            diagonal_one += 1
-        elif board[1] == 1 and board[5] == 1 and board[9] == 0:
-            ##print ("In diagonal if4")
-            diagonal_two += 1
-        elif board[1] == 0 and board[5] == 1 and board[9] == 1:
-            ##print ("In diagonal if5")
-            diagonal_two += 1
-        elif board[1] == 1 and board[5] == 0 and board[9] == 1:
-            ##print ("In diagonal if6")
-            diagonal_two += 1
-        elif board[1] == 1 and board[5] == 1 and board[9] == 1:
-            ##print ("In diagonal if7")
-            winner += 1
-        if board[3] == 1 and board[5] == 0 and board[7] == 0:
-            ##print ("In diagonal if8")
-            diagonal_one += 1
-        elif board[3] == 0 and board[5] == 1 and board[7] == 0:
-            ##print ("In diagonal if9")
-            diagonal_one += 1
-        elif board[3] == 0 and board[5] == 0 and board[7] == 1:
-            ##print ("In diagonal if10")
-            diagonal_one += 1
-        elif board[3] == 1 and board[5] == 1 and board[7] == 0:
-            ##print ("In diagonal if11")
-            diagonal_two += 1
-        elif board[3] == 0 and board[5] == 1 and board[7] == 1:
-            ##print ("In diagonal if12")
-            diagonal_two += 1
-        elif board[3] == 1 and board[5] == 0 and board[7] == 1:
-            ##print ("In diagonal if13")
-            diagonal_two += 1
-        elif board[3] == 1 and board[5] == 1 and board[7] == 1:
-            ##print ("In diagonal if14")
-            winner += 1
+        opponent_diagonal_one = 1 if any(np.array_equal(board[[1, 5, 9]], x) for x in possible_states_opponent[[1, 2, 4]]) else 0
+        opponent_diagonal_one += 1 if any(np.array_equal(board[[3, 5, 7]], x) for x in possible_states_opponent[[1, 2, 4]]) else 0
+        opponent_diagonal_two = 1 if any(np.array_equal(board[[1, 5, 9]], x) for x in possible_states_opponent[[3, 5, 6]]) else 0
+        opponent_diagonal_two += 1 if any(np.array_equal(board[[3, 5, 7]], x) for x in possible_states_opponent[[3, 5, 6]]) else 0
+        loser = 1 if np.array_equal(board[[1, 5, 9]], possible_states_opponent[7]) else 0
+        loser += 1 if np.array_equal(board[[3, 5, 7]], possible_states_opponent[7]) else 0
 
-        if board[1] == -1 and board[5] == 0 and board[9] == 0:
-            ##print ("In diagonal if15")
-            opponent_diagonal_one += 1
-        elif board[1] == 0 and board[5] == -1 and board[9] == 0:
-            ##print ("In diagonal if16")
-            opponent_diagonal_one += 1
-        elif board[1] == 0 and board[5] == 0 and board[9] == -1:
-            ##print ("In diagonal if17")
-            opponent_diagonal_one += 1
-        elif board[1] == -1 and board[5] == -1 and board[9] == 0:
-            ##print ("In diagonal if18")
-            opponent_diagonal_two += 1
-        elif board[1] == 0 and board[5] == -1 and board[9] == -1:
-            ##print ("In diagonal if19")
-            opponent_diagonal_two += 1
-        elif board[1] == -1 and board[5] == 0 and board[9] == -1:
-            ##print ("In diagonal if20")
-            opponent_diagonal_two += 1
-        elif board[1] == -1 and board[5] == -1 and board[9] == -1:
-            ##print ("In diagonal if21")
-            loser += 1
-        if board[3] == -1 and board[5] == 0 and board[7] == 0:
-            ##print ("In diagonal if22")
-            opponent_diagonal_one += 1
-        elif board[3] == 0 and board[5] == -1 and board[7] == 0:
-            ##print ("In diagonal if23")
-            opponent_diagonal_one += 1
-        elif board[3] == 0 and board[5] == 0 and board[7] == -1:
-            ##print ("In diagonal if24")
-            opponent_diagonal_one += 1
-        elif board[3] == -1 and board[5] == -1 and board[7] == 0:
-            ##print ("In diagonal if25")
-            opponent_diagonal_two += 1
-        elif board[3] == 0 and board[5] == -1 and board[7] == -1:
-            ##print ("In diagonal if26")
-            opponent_diagonal_two += 1
-        elif board[3] == -1 and board[5] == 0 and board[7] == -1:
-            ##print ("In diagonal if27")
-            opponent_diagonal_two += 1
-        elif board[3] == -1 and board[5] == -1 and board[7] == -1:
-            ##print ("In diagonal if28")
-            loser += 1
-
-        # TODO: consider replacing this with a dict
         return diagonal_one, diagonal_two, opponent_diagonal_one, opponent_diagonal_two, winner, loser
 
     @staticmethod
@@ -179,47 +104,33 @@ class Heuristic:
 
         for x in range(1, 4):
             if board[x] == 1 and board[x + 3] == 0 and board[x + 6] == 0:
-                # print ("in vertical if 1 with column %d" %(x))
                 vertical_one += 1
             elif board[x] == 0 and board[x + 3] == 1 and board[x + 6] == 0:
-                # print("in vertical if 2 with column %d" % (x))
                 vertical_one += 1
             elif board[x] == 0 and board[x + 3] == 0 and board[x + 6] == 1:
-                # print("in vertical if 3 with column %d" % (x))
                 vertical_one += 1
             elif board[x] == 1 and board[x + 3] == 1 and board[x + 6] == 0:
-                # print("in vertical if 4 with column %d" % (x))
                 vertical_two += 1
             elif board[x] == 0 and board[x + 3] == 1 and board[x + 6] == 1:
-                # print("in vertical if 5 with column %d" % (x))
                 vertical_two += 1
             elif board[x] == 1 and board[x + 3] == 0 and board[x + 6] == 1:
-                # print("in vertical if 6 with column %d" % (x))
                 vertical_two += 1
             elif board[x] == 1 and board[x + 3] == 1 and board[x + 6] == 1:
-                # print("in vertical if 7 with column %d" % (x))
                 winner += 1
 
             if board[x] == -1 and board[x + 3] == 0 and board[x + 6] == 0:
-                # print("in vertical if 8 with column %d" % (x))
                 opponent_vertical_one += 1
             elif board[x] == 0 and board[x + 3] == -1 and board[x + 6] == 0:
-                # print("in vertical if 9 with column %d" % (x))
                 opponent_vertical_one += 1
             elif board[x] == 0 and board[x + 3] == 0 and board[x + 6] == -1:
-                # print("in vertical if 10 with column %d" % (x))
                 opponent_vertical_one += 1
             elif board[x] == -1 and board[x + 3] == -1 and board[x + 6] == 0:
-                # print("in vertical if 11 with column %d" % (x))
                 opponent_vertical_two += 1
             elif board[x] == 0 and board[x + 3] == -1 and board[x + 6] == -1:
-                # print("in vertical if 12 with column %d" % (x))
                 opponent_vertical_two += 1
             elif board[x] == -1 and board[x + 3] == 0 and board[x + 6] == -1:
-                # print("in vertical if 13 with column %d" % (x))
                 opponent_vertical_two += 1
             elif board[x] == -1 and board[x + 3] == -1 and board[x + 6] == -1:
-                # print("in vertical if 14 with column %d" % (x))
                 loser += 1
 
         return vertical_one, vertical_two, opponent_vertical_one, opponent_vertical_two, winner, loser
@@ -244,47 +155,33 @@ class Heuristic:
         digits = [1, 4, 7]
         for x in digits:
             if board[x] == 1 and board[x + 1] == 0 and board[x + 2] == 0:
-                # print("in horizontal if 1 with row %d" % (x))
                 horizontal_one += 1
             elif board[x] == 0 and board[x + 1] == 1 and board[x + 2] == 0:
-                # print("in horizontal if 2 with row %d" % (x))
                 horizontal_one += 1
             elif board[x] == 0 and board[x + 1] == 0 and board[x + 2] == 1:
-                # print("in horizontal if 3 with row %d" % (x))
                 horizontal_one += 1
             elif board[x] == 1 and board[x + 1] == 1 and board[x + 2] == 0:
-                # print("in horizontal if 4 with row %d" % (x))
                 horizontal_two += 1
             elif board[x] == 0 and board[x + 1] == 1 and board[x + 2] == 1:
-                # print("in horizontal if 5 with row %d" % (x))
                 horizontal_two += 1
             elif board[x] == 1 and board[x + 1] == 0 and board[x + 2] == 1:
-                # print("in horizontal if 6 with row %d" % (x))
                 horizontal_two += 1
             elif board[x] == 1 and board[x + 1] == 1 and board[x + 2] == 1:
-                # print("in horizontal if 7 with row %d" % (x))
                 winner += 1
 
             if board[x] == -1 and board[x + 1] == 0 and board[x + 2] == 0:
-                # print("in horizontal if 8 with row %d" % (x))
                 opponent_horizontal_one += 1
             elif board[x] == 0 and board[x + 1] == -1 and board[x + 2] == 0:
-                # print("in horizontal if 9 with row %d" % (x))
                 opponent_horizontal_one += 1
             elif board[x] == 0 and board[x + 1] == 0 and board[x + 2] == -1:
-                # print("in horizontal if 10 with row %d" % (x))
                 opponent_horizontal_one += 1
             elif board[x] == -1 and board[x + 1] == -1 and board[x + 2] == 0:
-                # print("in horizontal if 11 with row %d" % (x))
                 opponent_horizontal_two += 1
             elif board[x] == 0 and board[x + 1] == -1 and board[x + 2] == -1:
-                # print("in horizontal if 12 with row %d" % (x))
                 opponent_horizontal_two += 1
             elif board[x] == -1 and board[x + 1] == 0 and board[x + 2] == -1:
-                # print("in horizontal if 13 with row %d" % (x))
                 opponent_horizontal_two += 1
             elif board[x] == -1 and board[x + 1] == -1 and board[x + 2] == -1:
-                # print("in horizontal if 14 with row %d" % (x))
                 loser += 1
 
         return horizontal_one, horizontal_two, opponent_horizontal_one, opponent_horizontal_two, winner, loser
@@ -348,3 +245,7 @@ class Heuristic:
         self._precalc_boards = heuristic_dict
 
 
+if __name__ == "__main__":
+    possible_states_player = np.array([np.array(i) for i in itertools.product([0, 1], repeat=3)])
+    print(possible_states_player)
+    print(possible_states_player[[1,2,4]])

@@ -70,7 +70,9 @@ class AlphaBeta:
             best_val = -math.inf
 
             for child in node.children:
+                # make move
                 child.alpha = self.__alpha_beta(child, depth + 1, alpha, beta, -player)
+                # undo move
                 best_val = max(best_val, child.alpha)
                 alpha = max(alpha, best_val)
                 if beta <= alpha:
