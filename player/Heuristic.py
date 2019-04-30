@@ -67,6 +67,18 @@ class Heuristic:
             diagonal_one, diagonal_two, opponent_diagonal_one, opponent_diagonal_two, winner, loser
             (int, int, int, int, int, int): Tuple contains the heuristic values calculated for a Tic-Tac-Toe board's diagonals.
 
+        Method:
+            (For this explanation, we are assuming that we are X and the opponent is O)
+            The number of diagonals that have 2 Xs are counted, and the number of diagonals with 1 x
+            and no Os are counted. Similarly the number of diagonals that have 2 Os and no Xs
+            are counted and the number of diagonals that have 1 Os and no Xs are also counted.
+            And lastly, the diagonal where we win (ie 3 Xs) and the diagonal where we lose
+            (ie 3 Os) are also counted.
+            This is done by the consideration of every possible combination in the 2 diagonals (ie the number of ways
+            I can have 2 Xs and no Os,the number of ways I can have 1 X and no O and the number of ways I can win
+            with 3 Xs, and the same is considered for the opponent as well). And under each circumstance,
+            the appropriate variable gets incremented (ie if a diagonal with 2 Xs and no Os is found, diagonal_two
+            is incremented and if a diagonal with 2 Os and no Xs is found, then opponent_diagonal_two is incremented and etc).
         """
 
         # TODO: replace this ugly variable initialisation with a dict
@@ -173,7 +185,19 @@ class Heuristic:
         Returns:
             vertical_one, vertical_two, opponent_vertical_one, opponent_vertical_two, winner, loser
             (int, int, int, int, int, int): Tuple contains the heuristic values calculated for a Tic-Tac-Toe board's verticals.
+        Method:
 
+            (For this explanation, we are assuming that we are X and the opponent is O)
+            The number of columns that have 2 Xs are counted, and the number of columns with 1 x
+            and no Os are counted. Similarly the number of columns that have 2 Os and no Xs
+            are counted and the number of columns that have 1 Os and no Xs are also counted.
+            And lastly,the column where we win (ie 3 Xs) and the column where we lose
+            (ie 3 Os) are also counted.
+            This is done by the consideration of every possible combination in the 2 columns (ie the number of ways
+            I can have 2 Xs and no Os,the number of ways I can have 1 X and no O and the number of ways I can win
+            with 3 Xs, and the same is considered for the opponent as well). And under each circumstance,
+            the appropriate variable gets incremented (ie if a column with 2 Xs and no Os is found, vertical_two
+            is incremented and if a column with 2 Os and no Xs is found, then opponent_vertical_two is incremented and etc).
         """
 
         vertical_one = vertical_two = opponent_vertical_one = opponent_vertical_two = winner = loser = 0
@@ -238,6 +262,18 @@ class Heuristic:
             horizontal_one, horizontal_two, opponent_horizontal_one, opponent_horizontal_two, winner, loser
             (int, int, int, int, int, int): Tuple contains the heuristic values calculated for a Tic-Tac-Toe board's horizontals.
 
+        Method:
+            (For this explanation, we are assuming that we are X and the opponent is O)
+            The number of rows that have 2 Xs are counted, and the number of rows with 1 x
+            and no Os are counted. Similarly the number of rows that have 2 Os and no Xs
+            are counted and the number of rows that have 1 Os and no Xs are also counted.
+            And lastly,the row where we win (ie 3 Xs) and the row where we lose
+            (ie 3 Os) are also counted.
+            This is done by the consideration of every possible combination in the 2 rows (ie the number of ways
+            I can have 2 Xs and no Os,the number of ways I can have 1 X and no O and the number of ways I can win
+            with 3 Xs, and the same is considered for the opponent as well). And under each circumstance,
+            the appropriate variable gets incremented (ie if a row with 2 Xs and no Os is found, horizontal_two
+            is incremented and if a row with 2 Os and no Xs is found, then opponent_horizontal_two is incremented and etc).
         """
 
         horizontal_one = horizontal_two = opponent_horizontal_one = opponent_horizontal_two = winner = loser = 0
@@ -299,6 +335,23 @@ class Heuristic:
         Returns:
             heuristic (int): Heuristic value of the board
 
+        Method:
+
+            Here we calculating the total heuristic for the particular sub-board. Here we first try to find out
+            the number of rows, columns and diagonals in the sub-board that have 2 Xs and no Os (and this value
+            is stored in my_two), the number of rows, columns and diagonals that have 1 X and no Os (and this
+            value is stored in my_one) and the number of rows, columns and diagonals in the sub-board where we
+            have won (and this value is stored in winner). Subsequently, we also calculate these values for the
+            opponent, where we calculate the number of rows, columns and diagonals in the sub-board that have 2 Os
+            and no Xs (and the value is stored in opp_two), the number of rows, columns and diagonals that have
+            1 O and no Xs (and the value is stored in opp_one) and the number of rows, columns and diagonals, we lose
+            (and the value is stored in loser).
+            We compute these values by using the functions above (calculate_vertical, calculate_horizontal and
+            calculate_diagonal). After computing these values, we multiply these values by the subsequent alpha, beta,
+            gamma, delta, win and lose- which are stored as global variables above. We multiply in the form of
+            heuristic = win*winner + lose*loser + alpha*my_two + beta*my_one - gamma*opp_two - delta*opp_one.
+            After calculating the heuristic for the sub-board, the heuristic is returned.
+
         """
         diagonal_one, diagonal_two, opponent_diagonal_one, opponent_diagonal_two, winner_d, loser_d = self.__calculate_diagonal(board)
         vertical_one, vertical_two, opponent_vertical_one, opponent_vertical_two, winner_v, loser_v = self.__calculate_vertical(board)
@@ -325,6 +378,10 @@ class Heuristic:
 
         Returns:
             heuristic (int): Heuristic value of the global board
+
+        Method:
+            Given a global state, this computes the heuristic for every single sub-board (using the function calculate_board_heuristic)
+            and adds them all up to give the global heuristic (ie the heuristic for the entire state).
 
         """
         total_heuristic = 0
