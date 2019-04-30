@@ -147,12 +147,3 @@ class Game:
 
         return move_list
 
-
-if __name__ == "__main__":
-    g = Game()
-    g.load()
-
-    h = Heuristic()
-    h.load()
-
-    g.generate_moves(np.array([0, 137, 6561, 1467, 0, 4376, 6561, 14661, 18, 738]), 3, 1, h, 8)

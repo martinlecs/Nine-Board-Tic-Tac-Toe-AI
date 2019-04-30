@@ -5,6 +5,7 @@
 import gc
 import socket
 import sys
+from math import ceil
 import numpy as np
 from player.AlphaBeta import AlphaBeta
 from player.Heuristic import Heuristic
@@ -15,11 +16,20 @@ from player.GameTreeNode import GameTreeNode
 class Agent:
 
     def __init__(self, game: Game, heuristic: Heuristic):
+        """ Agent
+        :param game:
+        :param heuristic:
+        """
         self._game = game
         self._heuristic = heuristic
         self._boards = np.zeros(shape=(10, 10), dtype='i1')
         self._curr = 0
         self._player = 1
+
+        self._games_played = 0
+        self._games_won = 0
+        self._games_drawn = 0
+        self._number_moves_made = 0
 
     def set_heuristic_params(self, alpha, beta, gamma, delta, win, lose):
         """ Sets heuristic parameters through the Heuristic class object """
@@ -52,10 +62,15 @@ class Agent:
 
     def play(self):
         """ Choose a move to play """
+
+        self._number_moves_made += 1
+
         parameterized_state = np.array([self._game.board_to_hash(b) for b in self._boards])
         node = GameTreeNode(parameterized_state, self._curr)
+
         n = AlphaBeta(node, self._game, self._heuristic, 7).run()
         self.place(self._curr, n, self._player)
+
         return n
 
     def place(self, board, num, player):
@@ -63,6 +78,19 @@ class Agent:
         self._curr = num
         self._boards[board][num] = player
         # self.print_board(self._boards)
+
+    def print_game_statistics(self):
+        """ Used to print game statistics such as win rate, average number of moves made etc.
+            Invoked at the end of game session.
+        """
+
+        print("#####################")
+        print("Games played: {}".format(self._games_played))
+        print("Games won: {}/{}".format(self._games_won, self._games_played))
+        if self._games_drawn > 0:
+            print("Games drawn: {}/{}".format(self._games_drawn, self._games_played))
+        print('Average Number of Moves Made per Game: {}'.format(ceil(self._number_moves_made/self._games_played)))
+        print("Win rate: {:.2f}%".format(self._games_won/self._games_played*100))
 
     def reset_boards(self):
         """ Used when playing multiple games in a row to reset the board """
@@ -79,6 +107,9 @@ class Agent:
         else:
             command, args = string, []
 
+        if command == "start":
+            self._games_played += 1
+            self.reset_boards()
         if command == "second_move":
             self.place(int(args[0]), int(args[1]), -self._player)
             return self.play()
@@ -92,12 +123,16 @@ class Agent:
             self.place(self._curr, int(args[0]), -self._player)
             return self.play()
         elif command == "win":
-            return -1
+            self._games_won += 1
+            print("We won!")
         elif command == "loss":
-            return -2
-        elif command == "end":
-            return 0
-        return 1
+            print("We lost :(")
+        elif command == "draw":
+            self._games_drawn += 1
+            print("Draw!")
+        elif command == "end.":
+            return -1
+        return 0
 
     def run(self, port=None):
         """ Connects to a specified socket and runs the game """
@@ -111,17 +146,26 @@ class Agent:
                 continue
             for line in text.split("\n"):
                 response = self.parse(line)
-                if response == 0:
+                if response == -1:
                     s.close()
-                    return response
+                    return
                 elif response > 0:
                     s.sendall((str(response) + "\n").encode())
 
+
 if __name__ == "__main__":
+
+    # Driver code for AI
+
+    # Intialiase Heuristic and Game classes.
     HEURISTIC = Heuristic()
     GAME = Game()
+
+    # Load in precalculated values
     HEURISTIC.load()
     GAME.load()
 
+    # Initialise Agent and run the AI
     a = Agent(GAME, HEURISTIC)
     a.run()
+    a.print_game_statistics()

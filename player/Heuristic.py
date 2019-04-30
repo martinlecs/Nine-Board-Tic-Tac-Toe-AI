@@ -40,7 +40,7 @@ class Heuristic:
                     self._precalc_boards = pickle.load(file)
                 # with open(os.path.join(SAVE_PATH, 'hash_board.pickle'), 'rb') as file:
                 #     self._hash_board = pickle.load(file)
-            except Exception as e:
+            except FileNotFoundError as e:
                 self.__precompute_heuristic_values()
 
     def set_params(self, alpha, beta, gamma, delta, win, lose):
@@ -324,12 +324,6 @@ class Heuristic:
             heuristic (int): Heuristic value of the global board
 
         """
-        # total = 0
-        # for b in global_board:
-        #     board = self._hash_board[b]
-        #     total += self.__calculate_board_heuristic(board)
-        #
-        # return total
         return sum([self._precalc_boards[b] for b in global_board]) / depth
 
     def __precompute_heuristic_values(self):
@@ -351,10 +345,6 @@ class Heuristic:
         with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'wb') as file:
             pickle.dump(heuristic_dict, file)
 
-        # with open(os.path.join(SAVE_PATH, 'hash_board.pickle'), 'wb') as file:
-        #     pickle.dump(hash_board, file)
-
         self._precalc_boards = heuristic_dict
-        # self._hash_board = hash_board
 
 
