@@ -42,15 +42,51 @@ class Heuristic:
 
     Attributes:
         global_board (numpy.ndarray): Numpy Representation of the global Tic-Tac-Toe board with shape (10,10)
+    Description:
+        Alpha, beta, gamma, delta, win and lose are the values we use to calculate the heuristic of the global
+        board. The heuristic for a sub board is calculated according the formula:
+            heuristic = win*winner + lose*loser + alpha*my_two + beta*my_one - gamma*opp_two - delta*opp_one.
+        Given the heuristic equation, the reason why the values are chosen in such a way, to help the alpha-
+        beta algorithm. In this heuristic, winning in the next move is preferred the most, hence if a board with
+        the winning state, the overpowering part of the heuristic of that board, will be the winning value of the
+        heuristic (win*winner==> and since winner = 1, win*winner will not equal to 0, hence it will be the most
+        overpoewring value in the equation). And the next overpowering value will be the lose value of the heuristic
+        equation (ie. if the global board has a losing state, then lose*loser will be greater than 0- since loser
+        will not equal to 0) and hence granted that the global state doesnt not have a winning state, the losing
+        state will be the most overpowering value in the board's heuristic. And the reason as to why lose is negative,
+        is because we want that value to be negative, so that the alpha-beta wont pick the move that results in that
+        value (since we are max). Similarly, granted that the board doesnt have a winning or a losing state, the next
+        overpowering value will be gamma*opp_two, in the heuristic (granted that there is are one or more rows, columns
+        and/or diagonals that have 2 Os and no Xs). This is because we dont want the agent to be stuck in a position,
+        where the opponent has guaranteed victory, because no matter where we move, in the next board, the opponent will
+        win. Hence we try to avoid the global state where the opponent has managed to have rows, columns and/or diagonals
+        with 2 Os and no Xs are in multiple boards. Again, just like before, gamma*opp_two is subtracted from the
+        heuristic, to ensure that that value will effect the total heuristic, negatively, causing the algorithm to not
+        prefer it.The next state the we prefer, is the state, where the agent has managed to create a global board where
+        multiple sub-boards have rows, columns and/or diagonals with 2Xs and no Os. This is why the next highest value or
+        overpowering value in the heuristic is alpha*my_two (granted that there are no winning or losing states in the
+        global state, and there are very none to very few rows, columns and/or diagonals with 2 Os and no Xs).
+        This value (ie alpha*my_two) is added to the overall heuristic value, to ensure that it has a positive influence
+        to the overall heuristic value of the global board. And lastly,we have beta and delta, which are multiplied with
+        my_one (ie. the value that stores the number of rows, columns and/or diagonals that have 1 X and no Os)  and
+        opp_one (ie. the value that stores the number of rows, columns and/or diagonals that have 1 O and no Xs) ,
+        respectively. Since opp_two is in regards to the opponent, it is subtracted from the heuristic, to have a negative
+        effect on the overall heuristic value for the board, and similarly,since my_two is to do with the agent, it is
+        added to the overall heuristic, to ensure that it could have a positive effect on the overall heuristic value of
+        the global board. Therefore the coefficients from most influential (negative or positive) on the overall heuristic
+        value of the global value, to the least influential are
+            win (positive influence), lose (negative influence), gamma (negative influence), alpha (positive influence),
+            beta (positive influence) and delta (negative influence) (beta and delta should have the same level of influence
+            on the overall heuristic value).
 
     """
 
     def __init__(self, global_board):
         self._global_board = global_board
-        self._alpha = 5
-        self._beta = 1
-        self._gamma = 4
-        self._delta = 1
+        self._alpha = 45
+        self._beta = 10
+        self._gamma = 90
+        self._delta = 10
         self._win = 1000000
         self._lose = -100000
 
