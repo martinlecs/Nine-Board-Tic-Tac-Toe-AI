@@ -195,7 +195,7 @@ def test_negamax_avoid_loss_in_next_turn_2(game_cls, heuristic_func):
     parameterized_state = np.array([game_cls.board_to_hash(b) for b in state])
 
     start_node = GameTreeNode(parameterized_state, 1)
-    m = AlphaBeta(start_node, game_cls, heuristic_func, 7)
+    m = AlphaBeta(start_node, game_cls, heuristic_func, 5)
     best_move = m.run()
 
     # print_depth_1_nodes(start_node, best_move, m.nodes_generated)
@@ -306,4 +306,5 @@ if __name__ == "__main__":
     heuristic.load()
     game = Game()
     game.load()
-    cProfile.runctx('g(x, y)', {'y': heuristic, 'x': game, 'g': test_negamax_avoid_loss_in_next_turn_2}, {})
+    # cProfile.runctx('g(x, y)', {'y': heuristic, 'x': game, 'g': test_negamax_avoid_loss_in_next_turn_2}, {})
+    cProfile.runctx('g(x, y)', {'y': heuristic, 'x': game, 'g': test_avoid_loss_in_next_move_5}, {})

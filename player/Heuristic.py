@@ -196,7 +196,7 @@ class Heuristic:
             heuristic (int): Heuristic value of the board
 
         """
-        diagonal_one, diagonal_two, opponent_diagonal_one, opponent_diagonal_two, winner_d, loser_d = self.__calculate_diagonal(
+        diagonal_one, diagonal_two, opponent_diagonal_one, opponent_diagonal_two, winner_d, loser_d = self.calculate_diagonal(
             board)
         vertical_one, vertical_two, opponent_vertical_one, opponent_vertical_two, winner_v, loser_v = self.__calculate_vertical(
             board)
@@ -225,19 +225,15 @@ class Heuristic:
 
     def __precompute_heuristic_values(self):
 
-        # generate all possible states
-        num_to_select = 9  # number of squares in tic-tac-toe board
-        possible_values = [0, 1, -1]
-        result = itertools.product(possible_values, repeat=num_to_select)  # creates a generator
+        # generate all possible boards
+        result = itertools.product([0, 1, -1], repeat=9)  # creates a generator
 
         heuristic_dict = {}
-        hash_board = {}
         for counter, i in enumerate(result):
             i = list(i)
             i.insert(0, 0)  # add leading zero to match formatting of np.array in agent.py
             if i.count(1) < 5 or i.count(-1) < 5:
                 heuristic_dict[counter] = self.__calculate_board_heuristic(np.array(i, dtype='i1'))
-                hash_board[counter] = np.array(i, dtype='i1')
 
         with open(os.path.join(SAVE_PATH, 'heuristic_values.pickle'), 'wb') as file:
             pickle.dump(heuristic_dict, file)

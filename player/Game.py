@@ -43,12 +43,23 @@ class Game:
         """ Returns the corresponding hash value for a board
             board (numpy array): i1
         """
-
         return self._board_hashes[board.tostring()]
 
-    def is_terminal(self, state: np.ndarray):
+    def hash_to_board(self, hash: int):
+        """ Converts a hash value back into its original board
+        :param hash:
+        :return: Read-only np array
+        """
+        return np.frombuffer(self._hash_to_board[hash], dtype='i1')
+
+    def is_terminal(self, node: GameTreeNode):
         """ Checks if there is a terminal node in a given global game state """
-        return any([self._win_states[s] for s in state])
+        if not node.parent:
+            board = node.board
+        else:
+            board = node.state[node.parent]
+
+        return self._win_states[board]  # TODO this is wrong?
 
     @staticmethod
     def is_terminal_node(board: np.ndarray):
@@ -109,41 +120,31 @@ class Game:
 
         self._win_states = win_states_dict
 
-    def generate_moves(self, state: np.ndarray, curr_board: int, player: int, eval_fn: Heuristic, depth: int ):
+    def generate_moves(self, state: np.ndarray, curr_board: int, player: int):
         """ Generates all possible moves for current player by looking at empty squares as potential moves
             Player 1 = 1, Player 2 = -1
 
         """
-
         # create local copy current board in play
-        board = np.frombuffer(self._hash_to_board[state[curr_board]], dtype='i1')   # read-only
+        board = np.frombuffer(self._hash_to_board[state[curr_board]], dtype='i1')  # read-only
         modifiable_board = np.empty_like(board)
         modifiable_board[:] = board
 
-        move_list = []
-        for i in range(1, 10):
-            if modifiable_board[i] == 0:
+        # create a local copy of the global state
+        updated_state = np.empty_like(state)
+        updated_state[:] = state
 
-                # set board
-                modifiable_board[i] = player
+        for i in np.where(modifiable_board == 0)[0][1:]:
+            # set board
+            modifiable_board[i] = player
 
-                # create a copy of global state and pass that down to the child
-                updated_state = np.empty_like(state)
-                updated_state[:] = state
-                updated_state[curr_board] = self.board_to_hash(modifiable_board)
+            # create a copy of global state and pass that down to the child
+            prev_board = updated_state[curr_board]
+            updated_state[curr_board] = self.board_to_hash(modifiable_board)
 
-                # calculate child's heuristic value and append child to parent
-                g = GameTreeNode(updated_state, i, player)
-                depth = 1 if depth == 0 else depth
-                g.heuristic_val = eval_fn.compute_heuristic(updated_state, depth)
-                move_list.append(g)
+            yield GameTreeNode(updated_state, i, parent=curr_board)
 
-                # reset board
-                modifiable_board[i] = 0
-
-        # order children
-        reversed = True if player == 1 else False
-        move_list.sort(key=lambda x: x.heuristic_val, reverse=reversed)
-
-        return move_list
+            # reset board
+            modifiable_board[i] = 0
+            updated_state[curr_board] = prev_board
 
