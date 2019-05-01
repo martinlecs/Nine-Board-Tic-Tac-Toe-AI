@@ -7,6 +7,14 @@
 # Our heuristic aims to maximise the number of adjacent values for the current player (See Heuristic.py for more info).
 # (ie. If I'm player X I want to maximise the number of adjacent Xs on every board).
 #
+# We use a GameTeeNode Class to represent each of our game states. It contains a reference to its global state,
+# the current board in play, its parent board (if it has a parent), as well as alpha value generated for that state.
+#
+# We have a Game Class that is used to perform all game-related actions such as:
+#   1) Checking if a state is a terminal state
+#   2) Converting between hash values and boards
+#   3) Generate moves
+#
 # A number of optimisations were used to enable the AI to go as deep as possible within the time:
 #   1) Hashing every possible board state
 #       - Can go from hash value -> board state (represented by a 1x10 numpy array)
