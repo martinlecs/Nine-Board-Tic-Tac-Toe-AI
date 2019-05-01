@@ -2,6 +2,7 @@ import numpy as np
 import itertools
 import pickle
 import os
+from typing import Tuple
 
 SAVE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -12,7 +13,7 @@ class Heuristic:
     Description of how heuristic value is calculated
 
     Attributes:
-        global_board (numpy.ndarray): Numpy Representation of the global Tic-Tac-Toe board with shape (10,10)
+        _precalc_boards (dict[int: int]): Maps board hash to a precalculated heuristic value.
 
     """
 
@@ -27,9 +28,6 @@ class Heuristic:
         self._win = 1000000
         self._lose = -100000
 
-        # debugging
-        self._hash_board = None
-
     def load(self):
         """ Loads hashed heuristic files used during search to minimise computation """
 
@@ -42,7 +40,7 @@ class Heuristic:
             except FileNotFoundError as e:
                 self.__precompute_heuristic_values()
 
-    def set_params(self, alpha, beta, gamma, delta, win, lose):
+    def set_params(self, alpha: int, beta: int, gamma: int, delta: int, win: int, lose: int):
         """ Sets parameters for heuristic function """
 
         self._alpha = alpha
@@ -53,9 +51,8 @@ class Heuristic:
         self._lose = lose
 
     @staticmethod
-    def calculate_diagonal(board: np.ndarray):
+    def calculate_diagonal(board: np.ndarray) -> Tuple[int, int, int, int, int, int]:
         """ Calculates the heuristic value for each diagonal in a Tic-Tac-Toe board.
-
 
         Args:
             board (numpy.ndarray): The current Tic-Tac-Toe board that we are currently playing on,
@@ -86,9 +83,8 @@ class Heuristic:
         return diagonal_one, diagonal_two, opponent_diagonal_one, opponent_diagonal_two, winner, loser
 
     @staticmethod
-    def __calculate_vertical(board: np.ndarray):
+    def __calculate_vertical(board: np.ndarray) -> Tuple[int, int, int, int, int, int]:
         """ Calculates the heuristic value for each vertical in a Tic-Tac-Toe board.
-
 
         Args:
             board (numpy.ndarray): The current Tic-Tac-Toe board that we are currently playing on,
@@ -99,7 +95,6 @@ class Heuristic:
             (int, int, int, int, int, int): Tuple contains the heuristic values calculated for a Tic-Tac-Toe board's verticals.
 
         """
-
         vertical_one = vertical_two = opponent_vertical_one = opponent_vertical_two = winner = loser = 0
 
         for x in range(1, 4):
@@ -136,9 +131,8 @@ class Heuristic:
         return vertical_one, vertical_two, opponent_vertical_one, opponent_vertical_two, winner, loser
 
     @staticmethod
-    def __calculate_horizontal(board: np.ndarray):
+    def __calculate_horizontal(board: np.ndarray) -> Tuple[int, int, int, int, int, int]:
         """ Calculates the heuristic value for each horizontal in a Tic-Tac-Toe board.
-
 
         Args:
             board (numpy.ndarray): The current Tic-Tac-Toe board that we are currently playing on,
@@ -149,7 +143,6 @@ class Heuristic:
             (int, int, int, int, int, int): Tuple contains the heuristic values calculated for a Tic-Tac-Toe board's horizontals.
 
         """
-
         horizontal_one = horizontal_two = opponent_horizontal_one = opponent_horizontal_two = winner = loser = 0
 
         digits = [1, 4, 7]
@@ -186,7 +179,7 @@ class Heuristic:
 
         return horizontal_one, horizontal_two, opponent_horizontal_one, opponent_horizontal_two, winner, loser
 
-    def __calculate_board_heuristic(self, board):
+    def __calculate_board_heuristic(self, board: np.ndarray) -> int:
         """ Calculates the board heuristic for a single board.
 
         Args:
@@ -214,16 +207,21 @@ class Heuristic:
 
         return heuristic
 
-    def compute_heuristic(self, global_board, depth):
+    def compute_heuristic(self, global_board: np.ndarray, depth: int) -> float:
         """ Calculates the total heuristic value for the global board.
 
+        Arguments:
+            global_board (numpy array): Numpy representation of the 10x10 global state.
+            depth (int): Depth that heuristic was calculated at.
+
         Returns:
-            heuristic (int): Heuristic value of the global board
+            heuristic (float): Heuristic value of the global board
 
         """
         return sum([self._precalc_boards[b] for b in global_board]) / depth
 
     def __precompute_heuristic_values(self):
+        """ Precomputes heuristic values and saves them into a file for later access. """
 
         # generate all possible boards
         result = itertools.product([0, 1, -1], repeat=9)  # creates a generator
@@ -241,7 +239,3 @@ class Heuristic:
         self._precalc_boards = heuristic_dict
 
 
-if __name__ == "__main__":
-    possible_states_player = np.array([np.array(i) for i in itertools.product([0, 1], repeat=3)])
-    print(possible_states_player)
-    print(possible_states_player[[1,2,4]])

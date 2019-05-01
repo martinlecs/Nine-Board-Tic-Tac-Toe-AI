@@ -4,7 +4,6 @@ import pandas as pd
 from Game import Game
 from Heuristic import Heuristic
 from agent import Agent
-from statistics import mean
 from sklearn.model_selection import ParameterGrid
 import os
 import subprocess
@@ -15,6 +14,13 @@ SAVE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file_
 
 
 class Tuning:
+    """ Used to run X independent games and determine the best values for our heuristic parameters.
+
+    Attributes:
+        game (Game):
+        heuristic (Heurisitic)
+
+    """
 
     def __init__(self, game: Game, heuristic: Heuristic):
         self._game = game

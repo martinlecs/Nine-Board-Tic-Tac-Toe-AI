@@ -14,30 +14,40 @@ from player.GameTreeNode import GameTreeNode
 
 
 class Agent:
+    """ AI Agent Class. Implements agent.c
+
+    Attributes:
+        game (Game): Game class instance.
+        heuristic (Heuristic): Heuristic class instance.
+
+    """
 
     def __init__(self, game: Game, heuristic: Heuristic):
-        """ Agent
-        :param game:
-        :param heuristic:
-        """
+
         self._game = game
         self._heuristic = heuristic
+
+        # Global board
         self._boards = np.zeros(shape=(10, 10), dtype='i1')
+
+        # current board in player
         self._curr = 0
+
         self._player = 1
 
+        # game statistics
         self._games_played = 0
         self._games_won = 0
         self._games_drawn = 0
         self._number_moves_made = 0
 
-    def set_heuristic_params(self, alpha, beta, gamma, delta, win, lose):
+    def set_heuristic_params(self, alpha: int, beta: int, gamma: int, delta: int, win: int, lose: int):
         """ Sets heuristic parameters through the Heuristic class object """
 
         self._heuristic.set_params(alpha, beta, gamma, delta, win, lose)
 
-    def print_board_row(self, board, a, b, c, i, j, k):
-        """ Print board row """
+    def print_board_row(self, board: np.ndarray, a: int, b: int, c: int, i: int, j: int, k: int):
+        """ Print board row. """
 
         chars = {0: '.', 1: 'O', -1: 'X'}
 
@@ -45,7 +55,7 @@ class Agent:
         print(chars[board[b][i]], chars[board[b][j]], chars[board[b][k]], end = " | ")
         print(chars[board[c][i]], chars[board[c][j]], chars[board[c][k]])
 
-    def print_board(self, board):
+    def print_board(self, board: np.ndarray):
         """ Print an entire board """
         self.print_board_row(board, 1,2,3,1,2,3)
         self.print_board_row(board, 1,2,3,4,5,6)
@@ -62,13 +72,18 @@ class Agent:
 
     def play(self):
         """ Choose a move to play """
+        self._number_moves_made += 1    # update game statistics
 
-        self._number_moves_made += 1
-
+        # convert global board into an array of hash values
         parameterized_state = np.array([self._game.board_to_hash(b) for b in self._boards])
+
+        # create new GameTeeNode with root state
         node = GameTreeNode(parameterized_state, self._curr)
 
+        # Run alpha beta search at depth 7
         n = AlphaBeta(node, self._game, self._heuristic, 7).run()
+
+        # Place the next move n
         self.place(self._curr, n, self._player)
 
         return n

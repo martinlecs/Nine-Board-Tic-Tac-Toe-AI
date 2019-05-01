@@ -2,18 +2,27 @@ import itertools
 import os
 import pickle
 import numpy as np
-from player.Heuristic import Heuristic
 from player.GameTreeNode import GameTreeNode
 
 SAVE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 class ClassNotLoaded(Exception):
+    """ Exception that is thrown when pre-generated files cannot be loaded form the current directory.
+
+    """
     pass
 
 
 class Game:
-    """ Contains all game-related accessory methods """
+    """ Checks state of GameTreeNodes and generates Children.
+
+    Attributes:
+        _win_states (dict of int: bool): Dictionary that maps board states (hashed) to a bool value
+        _board_hashs (dict of str: int): Dictionary that maps board states to a hash value
+        _hash_to_board (dict of int: str): Dictionary that maps board hashes (int) to their board state.
+
+    """
 
     def __init__(self):
         self._win_states = None
@@ -21,8 +30,7 @@ class Game:
         self._hash_to_board = None
 
     def load(self):
-        """ Loads necessary precomputed values into class for easy access """
-
+        """ Loads necessary precomputed values into class for later access """
         if not self._win_states:
             try:
                 # load board dict mapping numpy board states -> internal hash value
@@ -41,33 +49,55 @@ class Game:
 
     def board_to_hash(self, board: np.ndarray):
         """ Returns the corresponding hash value for a board
-            board (numpy array): i1
+
+        Arguments:
+            board (numpy array): Numpy array representing state of a board.
+
         """
         return self._board_hashes[board.tostring()]
 
     def hash_to_board(self, hash: int):
         """ Converts a hash value back into its original board
-        :param hash:
-        :return: Read-only np array
+
+        Arguments:
+            hash (int): Int value that represents a particular board state.
+
+        Returns:
+             Read-only numpy array
+
         """
         return np.frombuffer(self._hash_to_board[hash], dtype='i1')
 
     def is_terminal(self, node: GameTreeNode):
-        """ Checks if there is a terminal node in a given global game state """
+        """ Checks if there is a terminal node in a given board.
+
+        Arguments:
+            node (GameTreeNode): The node that represents current board state.
+
+        Returns:
+            True if node is a terminal node else False
+
+        """
         if not node.parent:
             board = node.board
         else:
             board = node.state[node.parent]
 
-        return self._win_states[board]  # TODO this is wrong?
+        return self._win_states[board]
 
     @staticmethod
     def is_terminal_node(board: np.ndarray):
-        """ Check is a state is a win-state for the player. ONLY TO BE USED FOR GENERATING WIN_STATES file """
+        """ Check is a state is a win-state for the player. ONLY TO BE USED FOR GENERATING WIN_STATES file
 
+        Arguments:
+            board (numpy array): Numpy array that represents the state of a board.
+
+        Returns:
+            True if board is terminal else False.
+
+        """
         def check_equal(lst):
             lst = list(lst)
-            # better to replace this with np.count_nonzeroes
             return lst[0] != 0 and lst.count(lst[0]) == len(lst)
 
         # check rows for win state
@@ -84,7 +114,6 @@ class Game:
             having the need to store the entire board.
 
         """
-
         # generate all possible states
         num_to_select = 9  # number of squares in tic-tac-toe board
         possible_values = [0, 1, -1]
@@ -95,6 +124,7 @@ class Game:
             i = list(i)
             i.insert(0, 0)  # add leading zero to match formatting of np.array in agent.py
             if i.count(1) < 5 or i.count(-1) < 5:
+                # creates dictionary mapping board states to a unique hash value
                 board_hash[np.array(i, dtype='i1').tostring()] = counter
 
         with open(os.path.join(SAVE_PATH, 'board_hashes.pickle'), 'wb') as file:
@@ -105,13 +135,11 @@ class Game:
 
     def __precompute_win_states(self):
         """ Precomputes all possible win states and stores them into a hash for faster computation. """
-
         if not self._board_hashes:
             raise FileNotFoundError("board_hashes.pickle was not generated or found.")
 
         win_states_dict = {}
 
-        # must use a hash function that only acts on values
         for board, hash_value in self._board_hashes.items():
             win_states_dict[hash_value] = Game.is_terminal_node(np.frombuffer(board, dtype='i1'))
 
@@ -122,7 +150,12 @@ class Game:
 
     def generate_moves(self, state: np.ndarray, curr_board: int, player: int):
         """ Generates all possible moves for current player by looking at empty squares as potential moves
-            Player 1 = 1, Player 2 = -1
+            Player 1 = 1, Player 2 = -1.
+
+        Arguments:
+            state (numpy array): Numpy array representing current state of the game.
+            curr_board (int): The current board that the next player must be made on.
+            player (int): The current player.
 
         """
         # create local copy current board in play
