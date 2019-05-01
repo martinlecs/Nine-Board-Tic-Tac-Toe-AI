@@ -2,6 +2,30 @@
 # Adapted from Sample starter bot by Zac Partrdige
 # 06/04/19
 
+
+# This AI uses the standard minimax search with alpha beta pruning optimisation to reduce the number of nodes expanded.
+# Our heuristic aims to maximise the number of adjacent values for the current player (See Heuristic.py for more info).
+# (ie. If I'm player X I want to maximise the number of adjacent Xs on every board).
+#
+# A number of optimisations were used to enable the AI to go as deep as possible within the time:
+#   1) Hashing every possible board state
+#       - Can go from hash value -> board state (represented by a 1x10 numpy array)
+#       - Can go from board state (numpy array) -> hash value
+#   2) Precalculate the heuristic for every board state and use the hash value (generated above) whenever we need to
+#       refer to them.
+#   3) Generate all possible win states for a Tic-Tac-Toe board and store these in a hash. We use the board's hash value
+#       to check if the board is a win state.
+#   *) All the above are stored in pickle files and loaded in during start-up.
+#
+# These optimisation enabled our AI to reach depth 7 with < 1 second per call to our alpha beta search function.
+#
+# Micro optimisations within Python:
+#   1) When we generate children, we don't generate all the children at once. We use a generator to create children on
+#       the fly and evaluate them sequentially. We minimise copying of states by making a move and then undoing it right
+#       after.
+#   2)  We avoid using loops, preferring list comprehensions or better yet, built-ins. Anything that does involve loops
+#       has been cached.
+
 import gc
 import socket
 import sys
@@ -98,7 +122,6 @@ class Agent:
         """ Used to print game statistics such as win rate, average number of moves made etc.
             Invoked at the end of game session.
         """
-
         print("#####################")
         print("Games played: {}".format(self._games_played))
         print("Games won: {}/{}".format(self._games_won, self._games_played))

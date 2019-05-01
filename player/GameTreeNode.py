@@ -4,7 +4,7 @@ from typing import List
 
 
 class GameTreeNode:
-    """GameTreeNode is used to generate successor states for the Alpha Beta search algorithm.
+    """GameTreeNode is used to represent game states for the Alpha Beta search algorithm.
 
     Arguments:
         state (np.ndarray): a 1x10 numpy array representing the global state of Tic-Tac-Toe
