@@ -1,4 +1,4 @@
-#Nine-Board Tic-Tac-Toe AI Player.
+# Nine-Board Tic-Tac-Toe AI Player.
 
 [![Build Status](https://travis-ci.com/martinlecs/comp3411-tic-tac-toe.svg?token=kGtS9cVnuVjkP2dryxvf&branch=master)](https://travis-ci.com/martinlecs/comp3411-tic-tac-toe)
 
