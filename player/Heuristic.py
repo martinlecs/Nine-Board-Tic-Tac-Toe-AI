@@ -63,22 +63,65 @@ class Heuristic:
             (int, int, int, int, int, int): Tuple contains the heuristic values calculated for a Tic-Tac-Toe board's diagonals.
 
         """
-        possible_states_player = np.array([np.array(i) for i in itertools.product([0, 1], repeat=3)])
-        possible_states_opponent = np.negative(possible_states_player)
+        diagonal_one = diagonal_two = opponent_diagonal_one = opponent_diagonal_two = winner = loser = 0
 
-        diagonal_one = 1 if any(np.array_equal(board[[1, 5, 9]], x) for x in possible_states_player[[1, 2, 4]]) else 0
-        diagonal_one += 1 if any(np.array_equal(board[[3, 5, 7]], x) for x in possible_states_player[[1, 2, 4]]) else 0
-        diagonal_two = 1 if any(np.array_equal(board[[1, 5, 9]], x) for x in possible_states_player[[3, 5, 6]]) else 0
-        diagonal_two += 1 if any(np.array_equal(board[[3, 5, 7]], x) for x in possible_states_player[[3, 5, 6]]) else 0
-        winner = 1 if np.array_equal(board[[1, 5, 9]], possible_states_player[7]) else 0
-        winner += 1 if np.array_equal(board[[3, 5, 7]], possible_states_player[7]) else 0
+        if board[1] == 1 and board[5] == 0 and board[9] == 0:
+            diagonal_one += 1
+        elif board[1] == 0 and board[5] == 1 and board[9] == 0:
+            diagonal_one += 1
+        elif board[1] == 0 and board[5] == 0 and board[9] == 1:
+            diagonal_one += 1
+        elif board[1] == 1 and board[5] == 1 and board[9] == 0:
+            diagonal_two += 1
+        elif board[1] == 0 and board[5] == 1 and board[9] == 1:
+            diagonal_two += 1
+        elif board[1] == 1 and board[5] == 0 and board[9] == 1:
+            diagonal_two += 1
+        elif board[1] == 1 and board[5] == 1 and board[9] == 1:
+            winner += 1
+        if board[3] == 1 and board[5] == 0 and board[7] == 0:
+            diagonal_one += 1
+        elif board[3] == 0 and board[5] == 1 and board[7] == 0:
+            diagonal_one += 1
+        elif board[3] == 0 and board[5] == 0 and board[7] == 1:
+            diagonal_one += 1
+        elif board[3] == 1 and board[5] == 1 and board[7] == 0:
+            diagonal_two += 1
+        elif board[3] == 0 and board[5] == 1 and board[7] == 1:
+            diagonal_two += 1
+        elif board[3] == 1 and board[5] == 0 and board[7] == 1:
+            diagonal_two += 1
+        elif board[3] == 1 and board[5] == 1 and board[7] == 1:
+            winner += 1
 
-        opponent_diagonal_one = 1 if any(np.array_equal(board[[1, 5, 9]], x) for x in possible_states_opponent[[1, 2, 4]]) else 0
-        opponent_diagonal_one += 1 if any(np.array_equal(board[[3, 5, 7]], x) for x in possible_states_opponent[[1, 2, 4]]) else 0
-        opponent_diagonal_two = 1 if any(np.array_equal(board[[1, 5, 9]], x) for x in possible_states_opponent[[3, 5, 6]]) else 0
-        opponent_diagonal_two += 1 if any(np.array_equal(board[[3, 5, 7]], x) for x in possible_states_opponent[[3, 5, 6]]) else 0
-        loser = 1 if np.array_equal(board[[1, 5, 9]], possible_states_opponent[7]) else 0
-        loser += 1 if np.array_equal(board[[3, 5, 7]], possible_states_opponent[7]) else 0
+        if board[1] == -1 and board[5] == 0 and board[9] == 0:
+            opponent_diagonal_one += 1
+        elif board[1] == 0 and board[5] == -1 and board[9] == 0:
+            opponent_diagonal_one += 1
+        elif board[1] == 0 and board[5] == 0 and board[9] == -1:
+            opponent_diagonal_one += 1
+        elif board[1] == -1 and board[5] == -1 and board[9] == 0:
+            opponent_diagonal_two += 1
+        elif board[1] == 0 and board[5] == -1 and board[9] == -1:
+            opponent_diagonal_two += 1
+        elif board[1] == -1 and board[5] == 0 and board[9] == -1:
+            opponent_diagonal_two += 1
+        elif board[1] == -1 and board[5] == -1 and board[9] == -1:
+            loser += 1
+        if board[3] == -1 and board[5] == 0 and board[7] == 0:
+            opponent_diagonal_one += 1
+        elif board[3] == 0 and board[5] == -1 and board[7] == 0:
+            opponent_diagonal_one += 1
+        elif board[3] == 0 and board[5] == 0 and board[7] == -1:
+            opponent_diagonal_one += 1
+        elif board[3] == -1 and board[5] == -1 and board[7] == 0:
+            opponent_diagonal_two += 1
+        elif board[3] == 0 and board[5] == -1 and board[7] == -1:
+            opponent_diagonal_two += 1
+        elif board[3] == -1 and board[5] == 0 and board[7] == -1:
+            opponent_diagonal_two += 1
+        elif board[3] == -1 and board[5] == -1 and board[7] == -1:
+            loser += 1
 
         return diagonal_one, diagonal_two, opponent_diagonal_one, opponent_diagonal_two, winner, loser
 
