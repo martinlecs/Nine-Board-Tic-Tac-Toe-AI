@@ -51,6 +51,6 @@ __Modifying Heuristic__
 1. Edit `player/Heuristic.py`.
 2. Modify class as needed.
 
-__Adding Tests__
-1. Look up pytest.
+__Running tests__
+1. Run `python3 -m pytest tests/` from the root directory.
 
