@@ -1,6 +1,6 @@
 # Nine-Board Tic-Tac-Toe AI Player.
 
-[![Build Status](https://travis-ci.com/martinlecs/comp3411-tic-tac-toe.svg?token=kGtS9cVnuVjkP2dryxvf&branch=master)](https://travis-ci.com/martinlecs/comp3411-tic-tac-toe)
+[![Build Status](https://travis-ci.com/martinlecs/Nine-Board-Tic-Tac-Toe-AI.svg?branch=master)](https://travis-ci.com/martinlecs/Nine-Board-Tic-Tac-Toe-AI)
 
 ## Introduction
 This game is played on a 3 x 3 array of 3 x 3 Tic-Tac-Toe boards. The first move is made by placing an X in a randomly chosen cell of a randomly chosen board. After that, the two players take turns placing an O or X alternately into an empty cell of the board corresponding to the cell of the previous move. (For example, if the previous move was into the upper right corner of a board, the next move must be made into the upper right board.)
